@@ -3,14 +3,6 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
 
-final dummySnapshot = [
-  {"name": "Filip", "votes": 15},
-  {"name": "Abraham", "votes": 14},
-  {"name": "Richard", "votes": 11},
-  {"name": "Ike", "votes": 10},
-  {"name": "Justin", "votes": 1},
-];
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -38,22 +30,27 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildBody(BuildContext context) {
-    // TODO: get actual snapshot from Cloud Firestore
-    return _buildList(context, dummySnapshot);
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection('matches').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LinearProgressIndicator();
+
+        return _buildList(context, snapshot.data.documents);
+      },
+    );
   }
 
-  Widget _buildList(BuildContext context, List<Map> snapshot) {
+  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return ListView(
       padding: const EdgeInsets.only(top: 20.0),
       children: snapshot.map((data) => _buildListItem(context, data)).toList(),
     );
   }
 
-  Widget _buildListItem(BuildContext context, Map data) {
-    final record = Record.fromMap(data);
+  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
+    final match = Match.fromSnapshot(data);
 
     return Padding(
-      key: ValueKey(record.name),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
         decoration: BoxDecoration(
@@ -61,29 +58,47 @@ class _MyHomePageState extends State<MyHomePage> {
           borderRadius: BorderRadius.circular(5.0),
         ),
         child: ListTile(
-          title: Text(record.name),
-          trailing: Text(record.votes.toString()),
-          onTap: () => print(record),
+          title: Text("${match.teamA.name} vs ${match.teamB.name}"),
+          onTap: () => print(match),
         ),
       ),
     );
   }
 }
 
-class Record {
-  final String name;
-  final int votes;
+class Match {
+  final Team teamA;
+  final Team teamB;
+  final DateTime lastPlayed;
+
   final DocumentReference reference;
 
-  Record.fromMap(Map<String, dynamic> map, {this.reference})
-      : assert(map['name'] != null),
-        assert(map['votes'] != null),
-        name = map['name'],
-        votes = map['votes'];
+  Match(this.teamA, this.teamB, this.lastPlayed, {this.reference});
 
-  Record.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data, reference: snapshot.reference);
+  Match.fromSnapshot(DocumentSnapshot snapshot)
+      : teamA = Team.fromMap(snapshot.data['teamA']),
+        teamB = Team.fromMap(snapshot.data['teamB']),
+        lastPlayed = snapshot.data['last_played'],
+        reference = snapshot.reference;
 
   @override
-  String toString() => "Record<$name:$votes>";
+  String toString() => "Match<$teamA vs $teamB, last played: $lastPlayed>";
+}
+
+class Team {
+  final String name;
+  final String player1;
+  final String player2;
+  final int wins;
+
+  Team(this.name, this.player1, this.player2) : wins = 0;
+
+  Team.fromMap(Map map)
+      : name = map["name"],
+        player1 = map["player1"],
+        player2 = map["player2"],
+        wins = map["wins"];
+
+  @override
+  String toString() => "Team<$name:$player1,$player2. wins: $wins>";
 }

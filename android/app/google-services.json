@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "80405825147",
+    "firebase_url": "https://ten-no-trumps2.firebaseio.com",
+    "project_id": "ten-no-trumps2",
+    "storage_bucket": "ten-no-trumps2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80405825147:android:e92193e762e14689",
+        "android_client_info": {
+          "package_name": "com.antsapps.tennotrumps2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "80405825147-o4s7lokuruonerrhk1065eop2bshbj2u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antsapps.tennotrumps2",
+            "certificate_hash": "aab68598bd6d4bae4b50ce79cace3674d7470201"
+          }
+        },
+        {
+          "client_id": "80405825147-1nufiok2n6gstvuuf1tm6gah7eadov84.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeDUCHcvI1ox9iyYeCd2yHDgyQBx876zU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "80405825147-1nufiok2n6gstvuuf1tm6gah7eadov84.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
