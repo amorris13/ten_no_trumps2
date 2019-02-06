@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'rounds_page.dart';
+import 'match_screen.dart';
 import 'model/match.dart';
 
-class MyHomePage extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
-  _MyHomePageState createState() {
-    return _MyHomePageState();
+  _HomeScreenState createState() {
+    return _HomeScreenState();
   }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text("${match.teamA.name} vs ${match.teamB.name}"),
           onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => RoundsPage(match)),
+                MaterialPageRoute(builder: (context) => MatchScreen(match)),
               ),
         ),
       ),

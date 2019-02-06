@@ -2,22 +2,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'model/match.dart';
 import 'model/round.dart';
+import 'round_screen.dart';
 
-class RoundsPage extends StatefulWidget {
+class MatchScreen extends StatefulWidget {
   final Match match;
 
-  RoundsPage(this.match);
+  MatchScreen(this.match);
 
   @override
-  _RoundsPageState createState() {
-    return _RoundsPageState(this.match);
+  _MatchScreenState createState() {
+    return _MatchScreenState(this.match);
   }
 }
 
-class _RoundsPageState extends State<RoundsPage> {
+class _MatchScreenState extends State<MatchScreen> {
   final Match match;
 
-  _RoundsPageState(this.match);
+  _MatchScreenState(this.match);
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,11 @@ class _RoundsPageState extends State<RoundsPage> {
         ),
         child: ListTile(
           title: Text("${round.teamAScore} vs ${round.teamBScore}"),
-          onTap: () => print(round),
+          onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => RoundScreen(match, round)),
+              ),
         ),
       ),
     );
