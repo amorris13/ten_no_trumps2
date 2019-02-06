@@ -1,27 +1,39 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'rounds_page.dart';
 import 'model/match.dart';
+import 'model/round.dart';
 
-class MyHomePage extends StatefulWidget {
+class RoundsPage extends StatefulWidget {
+  final Match match;
+
+  RoundsPage(this.match);
+
   @override
-  _MyHomePageState createState() {
-    return _MyHomePageState();
+  _RoundsPageState createState() {
+    return _RoundsPageState(this.match);
   }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _RoundsPageState extends State<RoundsPage> {
+  final Match match;
+
+  _RoundsPageState(this.match);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('500 Scorer')),
+      appBar: AppBar(title: Text("${match.teamA.name} vs ${match.teamB.name}")),
       body: _buildBody(context),
     );
   }
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('matches').snapshots(),
+      stream: Firestore.instance
+          .collection('matches')
+          .document(match.reference.documentID)
+          .collection("rounds")
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
@@ -38,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    final match = Match.fromSnapshot(data);
+    final round = Round.fromSnapshot(data);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -48,11 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
           borderRadius: BorderRadius.circular(5.0),
         ),
         child: ListTile(
-          title: Text("${match.teamA.name} vs ${match.teamB.name}"),
-          onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RoundsPage(match)),
-              ),
+          title: Text("${round.teamAScore} vs ${round.teamBScore}"),
+          onTap: () => print(round),
         ),
       ),
     );
