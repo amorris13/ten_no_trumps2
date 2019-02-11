@@ -87,7 +87,6 @@ class _HomeScreenState extends State<HomeScreen> {
               context,
               MaterialPageRoute(builder: (context) => MatchScreen(match)),
             ),
-        onLongPress: () => snapshot.reference.delete(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
           child: Column(
