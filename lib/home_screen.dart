@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'match_screen.dart';
+import 'new_match_screen.dart';
 import 'model/match.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,7 +16,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('500 Scorer')),
+      appBar: AppBar(
+        title: Text('500 Scorer'),
+        actions: <Widget>[
+          // action button
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NewMatchScreen()),
+                ),
+          ),
+        ],
+      ),
       body: _buildBody(context),
     );
   }
