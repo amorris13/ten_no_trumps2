@@ -55,86 +55,109 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    final match = Match.fromSnapshot(data);
+  Widget _buildListItem(BuildContext context, DocumentSnapshot snapshot) {
+    final match = Match.fromSnapshot(snapshot);
 
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
     int nameFlex = 5;
     int winsFlex = 1;
-    return InkWell(
-      onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MatchScreen(match)),
+    return Dismissible(
+      background: Container(color: Colors.red),
+      key: Key(match.toString()),
+      onDismissed: (direction) {
+        setState(() {
+          snapshot.reference.delete();
+        });
+
+        // Show a snackbar! This snackbar could also contain "Undo" actions.
+        Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Match Deleted"),
+            action: SnackBarAction(
+              label: 'Undo',
+              onPressed: () => Firestore.instance
+                  .document(snapshot.reference.path)
+                  .setData(snapshot.data),
+            ),
           ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Expanded(
-                  flex: nameFlex,
-                  child: Text(
-                    match.teamA.name,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
-                    style: mainStyle,
-                  ),
-                ),
-                Expanded(
-                  flex: winsFlex,
-                  child: Text(
-                    "${match.teamA.wins}",
-                    textAlign: TextAlign.right,
-                    style: mainStyle,
-                  ),
-                ),
-                Expanded(
-                  flex: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        );
+      },
+      child: InkWell(
+        onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MatchScreen(match)),
+            ),
+        onLongPress: () => snapshot.reference.delete(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                    flex: nameFlex,
                     child: Text(
-                      ":",
-                      textAlign: TextAlign.center,
+                      match.teamA.name,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
                       style: mainStyle,
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: winsFlex,
-                  child: Text(
-                    "${match.teamB.wins}",
-                    textAlign: TextAlign.left,
-                    style: mainStyle,
-                  ),
-                ),
-                Expanded(
-                  flex: nameFlex,
-                  child: Text(
-                    match.teamB.name,
-                    textAlign: TextAlign.right,
-                    overflow: TextOverflow.ellipsis,
-                    style: mainStyle,
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 6.0),
-              child: Row(
-                children: <Widget>[
                   Expanded(
+                    flex: winsFlex,
                     child: Text(
-                      DateFormat.yMMMd().format(match.lastPlayed),
+                      "${match.teamA.wins}",
                       textAlign: TextAlign.right,
-                      style: Theme.of(context).textTheme.caption,
+                      style: mainStyle,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Text(
+                        ":",
+                        textAlign: TextAlign.center,
+                        style: mainStyle,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: winsFlex,
+                    child: Text(
+                      "${match.teamB.wins}",
+                      textAlign: TextAlign.left,
+                      style: mainStyle,
+                    ),
+                  ),
+                  Expanded(
+                    flex: nameFlex,
+                    child: Text(
+                      match.teamB.name,
+                      textAlign: TextAlign.right,
+                      overflow: TextOverflow.ellipsis,
+                      style: mainStyle,
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(top: 6.0),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        DateFormat.yMMMd().format(match.lastPlayed),
+                        textAlign: TextAlign.right,
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
