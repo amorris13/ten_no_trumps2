@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'model/match.dart';
 import 'model/round.dart';
 import 'round_screen.dart';
+import 'common_widgets.dart';
 
 class MatchScreen extends StatefulWidget {
   final Match match;
@@ -146,7 +147,9 @@ class _MatchScreenState extends State<MatchScreen> {
     int winsFlex = 1;
 
     return Dismissible(
-      background: Container(color: Colors.red),
+      background: new LeaveBehindWidget(alignment: Alignment.centerLeft),
+      secondaryBackground:
+          new LeaveBehindWidget(alignment: Alignment.centerRight),
       key: Key(round.toString()),
       onDismissed: (direction) {
         setState(() {

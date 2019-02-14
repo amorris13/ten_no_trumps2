@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'match_screen.dart';
 import 'new_match_screen.dart';
 import 'model/match.dart';
+import 'common_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -62,7 +63,9 @@ class _HomeScreenState extends State<HomeScreen> {
     int nameFlex = 5;
     int winsFlex = 1;
     return Dismissible(
-      background: Container(color: Colors.red),
+      background: new LeaveBehindWidget(alignment: Alignment.centerLeft),
+      secondaryBackground:
+          new LeaveBehindWidget(alignment: Alignment.centerRight),
       key: Key(match.toString()),
       onDismissed: (direction) {
         setState(() {
