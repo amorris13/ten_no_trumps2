@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'match_screen.dart';
-import 'new_match_screen.dart';
-import 'model/match.dart';
+
 import 'common_widgets.dart';
+import 'match_screen.dart';
+import 'model/match.dart';
+import 'new_match_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

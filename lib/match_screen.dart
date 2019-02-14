@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'common_widgets.dart';
 import 'model/match.dart';
 import 'model/round.dart';
 import 'round_screen.dart';
-import 'common_widgets.dart';
 
 class MatchScreen extends StatefulWidget {
   final Match match;

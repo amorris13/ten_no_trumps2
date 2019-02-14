@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import 'model/hand.dart';
 import 'model/match.dart';
 import 'model/round.dart';
-import 'model/hand.dart';
 
 class RoundScreen extends StatefulWidget {
   final Match match;
