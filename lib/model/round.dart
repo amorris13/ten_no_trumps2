@@ -3,14 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Round {
   final int teamAScore;
   final int teamBScore;
+  final DateTime lastPlayed;
 
   final DocumentReference reference;
 
-  Round(this.teamAScore, this.teamBScore, {this.reference});
+  Round(this.teamAScore, this.teamBScore, this.lastPlayed, {this.reference});
 
   Round.fromSnapshot(DocumentSnapshot snapshot)
       : teamAScore = snapshot.data['teamA_score'],
         teamBScore = snapshot.data['teamB_score'],
+        lastPlayed = snapshot.data['last_played'],
         reference = snapshot.reference;
 
   @override

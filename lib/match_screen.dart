@@ -26,7 +26,34 @@ class _MatchScreenState extends State<MatchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("${match.teamA.name} vs ${match.teamB.name}")),
+      appBar: AppBar(
+        title: Text("${match.teamA.name} vs ${match.teamB.name}"),
+        actions: <Widget>[
+          // action button
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Map<String, dynamic> map = Map();
+              map["teamA_score"] = 0;
+              map["teamB_score"] = 0;
+              map["last_played"] = DateTime.now();
+              Future<DocumentReference> addRound = Firestore.instance
+                  .collection('matches')
+                  .document(this.match.reference.documentID)
+                  .collection("rounds")
+                  .add(map);
+              Future<Round> round = addRound
+                  .then((roundReference) => roundReference.get())
+                  .then((snapshot) => Round.fromSnapshot(snapshot))
+                  .then((round) => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RoundScreen(match, round)),
+                      ));
+            },
+          ),
+        ],
+      ),
       body: _buildBody(context),
     );
   }
@@ -218,7 +245,7 @@ class _MatchScreenState extends State<MatchScreen> {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        DateFormat.yMMMd().format(match.lastPlayed),
+                        DateFormat.yMMMd().format(round.lastPlayed),
                         textAlign: TextAlign.right,
                         style: Theme.of(context).textTheme.caption,
                       ),
