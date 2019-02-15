@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'match_screen.dart';
-import 'model/match.dart';
 
 class NewMatchScreen extends StatefulWidget {
   NewMatchScreen();
@@ -81,19 +80,15 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                   // the form is invalid.
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
-                    Future<DocumentReference> addMatch = Firestore.instance
-                        .collection("matches")
-                        .add(newMatch.toMap());
-                    Future<Match> match = addMatch.then((matchReference) =>
-                        matchReference
-                            .snapshots()
-                            .map((snapshot) => Match.fromSnapshot(snapshot))
-                            .first);
-                    match.then((match) => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MatchScreen(match)),
-                        ));
+
+                    DocumentReference matchReference =
+                        Firestore.instance.collection("matches").document();
+                    matchReference.setData(newMatch.toMap());
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MatchScreen(matchReference)),
+                    );
                   }
                 },
                 child: Text('Create Team'),
@@ -149,6 +144,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
   }
 }
 
+// TODO: reuse existing Match & Team PODOs.
 class NewMatch {
   NewTeam teamA = NewTeam();
   NewTeam teamB = NewTeam();

@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot snapshot) {
-    final match = Match.fromSnapshot(snapshot);
+    final match = Match.fromMap(snapshot.data);
 
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
     int nameFlex = 5;
@@ -89,7 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: InkWell(
         onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MatchScreen(match)),
+              MaterialPageRoute(
+                  builder: (context) => MatchScreen(snapshot.reference)),
             ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),

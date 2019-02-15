@@ -7,24 +7,24 @@ import 'model/match.dart';
 import 'model/round.dart';
 import 'round_screen.dart';
 
-class MatchScreen extends StatefulWidget {
-  final Match match;
+class MatchScreen extends StatelessWidget {
+  final DocumentReference matchReference;
 
-  MatchScreen(this.match);
-
-  @override
-  _MatchScreenState createState() {
-    return _MatchScreenState(this.match);
-  }
-}
-
-class _MatchScreenState extends State<MatchScreen> {
-  final Match match;
-
-  _MatchScreenState(this.match);
+  MatchScreen(this.matchReference);
 
   @override
   Widget build(BuildContext context) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: matchReference.snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LinearProgressIndicator();
+
+        return _buildScreen(context, Match.fromMap(snapshot.data.data));
+      },
+    );
+  }
+
+  Widget _buildScreen(BuildContext context, Match match) {
     return Scaffold(
       appBar: AppBar(
         title: Text("${match.teamA.name} vs ${match.teamB.name}"),
@@ -37,33 +37,30 @@ class _MatchScreenState extends State<MatchScreen> {
               map["teamA_score"] = 0;
               map["teamB_score"] = 0;
               map["last_played"] = DateTime.now();
-              Future<DocumentReference> addRound = Firestore.instance
-                  .collection('matches')
-                  .document(this.match.reference.documentID)
-                  .collection("rounds")
-                  .add(map);
-              Future<Round> round = addRound
-                  .then((roundReference) => roundReference.get())
-                  .then((snapshot) => Round.fromSnapshot(snapshot))
-                  .then((round) => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RoundScreen(match, round)),
-                      ));
+
+              DocumentReference roundReference =
+                  matchReference.collection("rounds").document();
+              roundReference.setData(map);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        RoundScreen(matchReference, roundReference)),
+              );
             },
           ),
         ],
       ),
-      body: _buildBody(context),
+      body: _buildBody(context, match),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context, Match match) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         children: <Widget>[
-          _buildHeader(context),
+          _buildHeader(context, match),
           Row(
             children: [
               Expanded(
@@ -81,15 +78,11 @@ class _MatchScreenState extends State<MatchScreen> {
           ),
           Flexible(
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance
-                  .collection('matches')
-                  .document(match.reference.documentID)
-                  .collection("rounds")
-                  .snapshots(),
+              stream: matchReference.collection("rounds").snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return LinearProgressIndicator();
 
-                return _buildList(context, snapshot.data.documents);
+                return _buildList(context, match, snapshot.data.documents);
               },
             ),
           ),
@@ -98,7 +91,7 @@ class _MatchScreenState extends State<MatchScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, Match match) {
     TextStyle mainStyle = Theme.of(context).textTheme.title;
     int nameFlex = 5;
     int winsFlex = 1;
@@ -157,19 +150,23 @@ class _MatchScreenState extends State<MatchScreen> {
     );
   }
 
-  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+  Widget _buildList(
+      BuildContext context, Match match, List<DocumentSnapshot> snapshot) {
     return ListView.separated(
       separatorBuilder: (context, index) => Divider(
             color: Colors.grey,
             height: 0.0,
           ),
       itemCount: snapshot.length,
-      itemBuilder: (context, index) => _buildListItem(context, snapshot[index]),
+      itemBuilder: (context, index) =>
+          _buildListItem(context, match, snapshot[index]),
     );
   }
 
-  Widget _buildListItem(BuildContext context, DocumentSnapshot snapshot) {
-    final round = Round.fromSnapshot(snapshot);
+  Widget _buildListItem(
+      BuildContext context, Match match, DocumentSnapshot roundSnapshot) {
+    final round = Round.fromMap(roundSnapshot.data);
+    final roundReference = roundSnapshot.reference;
 
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
     int winsFlex = 1;
@@ -180,9 +177,7 @@ class _MatchScreenState extends State<MatchScreen> {
           new LeaveBehindWidget(alignment: Alignment.centerRight),
       key: Key(round.toString()),
       onDismissed: (direction) {
-        setState(() {
-          snapshot.reference.delete();
-        });
+        roundReference.delete();
 
         // Show a snackbar! This snackbar could also contain "Undo" actions.
         Scaffold.of(context).showSnackBar(
@@ -191,8 +186,8 @@ class _MatchScreenState extends State<MatchScreen> {
             action: SnackBarAction(
               label: 'Undo',
               onPressed: () => Firestore.instance
-                  .document(snapshot.reference.path)
-                  .setData(snapshot.data),
+                  .document(roundReference.path)
+                  .setData(roundSnapshot.data),
             ),
           ),
         );
@@ -201,7 +196,8 @@ class _MatchScreenState extends State<MatchScreen> {
         onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => RoundScreen(match, round)),
+                  builder: (context) =>
+                      RoundScreen(matchReference, roundReference)),
             ),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 8.0),

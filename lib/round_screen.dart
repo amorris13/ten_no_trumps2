@@ -1,27 +1,63 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'model/hand.dart';
 import 'model/match.dart';
 import 'model/round.dart';
 
-class RoundScreen extends StatefulWidget {
-  final Match match;
-  final Round round;
+class RoundScreen extends StatelessWidget {
+  final DocumentReference matchReference;
+  final DocumentReference roundReference;
 
-  RoundScreen(this.match, this.round);
+  RoundScreen(this.matchReference, this.roundReference);
 
   @override
-  _RoundScreenState createState() {
-    return _RoundScreenState(this.match, this.round);
+  Widget build(BuildContext context) {
+    return StreamBuilder<Snapshots>(
+      stream: Observable.combineLatest2(
+          matchReference.snapshots(),
+          roundReference.snapshots(),
+          (matchSnapshot, roundSnapshot) =>
+              Snapshots(matchSnapshot, roundSnapshot)),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LinearProgressIndicator();
+
+        Snapshots snapshots = snapshot.data;
+        return RoundWidget(snapshots.matchSnapshot, snapshots.roundSnapshot);
+      },
+    );
   }
 }
 
-class _RoundScreenState extends State<RoundScreen> {
+class RoundWidget extends StatefulWidget {
+  final DocumentSnapshot match;
+  final DocumentSnapshot round;
+
+  RoundWidget(this.match, this.round);
+
+  @override
+  _RoundWidgetState createState() {
+    return _RoundWidgetState.fromSnapshots(match, round);
+  }
+}
+
+class _RoundWidgetState extends State<RoundWidget> {
+  final DocumentReference matchReference;
   final Match match;
+
+  final DocumentReference roundReference;
   final Round round;
 
-  _RoundScreenState(this.match, this.round);
+  _RoundWidgetState(
+      this.matchReference, this.match, this.roundReference, this.round);
+
+  _RoundWidgetState.fromSnapshots(
+      DocumentSnapshot matchSnapshot, DocumentSnapshot roundSnapshot)
+      : matchReference = matchSnapshot.reference,
+        match = Match.fromMap(matchSnapshot.data),
+        roundReference = roundSnapshot.reference,
+        round = Round.fromMap(roundSnapshot.data);
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +69,7 @@ class _RoundScreenState extends State<RoundScreen> {
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
-          .collection('matches')
-          .document(match.reference.documentID)
-          .collection("rounds")
-          .document(round.reference.documentID)
-          .collection("hands")
-          .snapshots(),
+      stream: roundReference.collection("hands").snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
@@ -55,8 +85,8 @@ class _RoundScreenState extends State<RoundScreen> {
     );
   }
 
-  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    final hand = Hand.fromSnapshot(data);
+  Widget _buildListItem(BuildContext context, DocumentSnapshot handSnapshot) {
+    final hand = Hand.fromMap(handSnapshot.data);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -73,4 +103,11 @@ class _RoundScreenState extends State<RoundScreen> {
       ),
     );
   }
+}
+
+class Snapshots {
+  final DocumentSnapshot matchSnapshot;
+  final DocumentSnapshot roundSnapshot;
+
+  Snapshots(this.matchSnapshot, this.roundSnapshot);
 }

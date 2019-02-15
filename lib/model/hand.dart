@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'bid.dart';
 
 class Hand {
@@ -12,21 +10,17 @@ class Hand {
   final int pointsTeamB;
   final int tricksWon;
 
-  final DocumentReference reference;
-
   Hand(this.bid, this.biddingPlayer, this.biddingTeam, this.dealer,
-      this.pointsTeamA, this.pointsTeamB, this.tricksWon,
-      {this.reference});
+      this.pointsTeamA, this.pointsTeamB, this.tricksWon);
 
-  Hand.fromSnapshot(DocumentSnapshot snapshot)
-      : bid = Bid.bidsMap[snapshot.data['bid']],
-        biddingPlayer = snapshot.data['bidding_player'],
-        biddingTeam = snapshot.data['bidding_team'],
-        dealer = snapshot.data['dealer'],
-        pointsTeamA = snapshot.data['points_teamA'],
-        pointsTeamB = snapshot.data['points_teamB'],
-        tricksWon = snapshot.data['tricks_won'],
-        reference = snapshot.reference;
+  Hand.fromMap(Map map)
+      : bid = Bid.bidsMap[map['bid']],
+        biddingPlayer = map['bidding_player'],
+        biddingTeam = map['bidding_team'],
+        dealer = map['dealer'],
+        pointsTeamA = map['points_teamA'],
+        pointsTeamB = map['points_teamB'],
+        tricksWon = map['tricks_won'];
 
   @override
   String toString() =>

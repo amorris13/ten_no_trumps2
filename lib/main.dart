@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
 import 'home_screen.dart';
 
 void main() {
-  debugPaintSizeEnabled = true;
+  debugPaintSizeEnabled = false;
   runApp(MyApp());
 }
 

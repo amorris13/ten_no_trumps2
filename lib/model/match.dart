@@ -1,19 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Match {
   final Team teamA;
   final Team teamB;
   final DateTime lastPlayed;
 
-  final DocumentReference reference;
+  Match(this.teamA, this.teamB, this.lastPlayed);
 
-  Match(this.teamA, this.teamB, this.lastPlayed, {this.reference});
+  Match.fromMap(Map map)
+      : teamA = Team.fromMap(map['teamA']),
+        teamB = Team.fromMap(map['teamB']),
+        lastPlayed = map['last_played'];
 
-  Match.fromSnapshot(DocumentSnapshot snapshot)
-      : teamA = Team.fromMap(snapshot.data['teamA']),
-        teamB = Team.fromMap(snapshot.data['teamB']),
-        lastPlayed = snapshot.data['last_played'],
-        reference = snapshot.reference;
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = Map();
+    map["teamA"] = teamA.toMap();
+    map["teamB"] = teamB.toMap();
+    map["last_played"] = DateTime.now();
+    return map;
+  }
 
   @override
   String toString() => "Match<$teamA vs $teamB, last played: $lastPlayed>";
@@ -32,6 +35,17 @@ class Team {
         player1 = map["player1"],
         player2 = map["player2"],
         wins = map["wins"];
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = Map();
+    map["name"] = name;
+    map["wins"] = wins;
+    if (player1 != null && player2 != null) {
+      map["player1"] = player1;
+      map["player2"] = player2;
+    }
+    return map;
+  }
 
   @override
   String toString() => "Team<$name:$player1,$player2. wins: $wins>";
