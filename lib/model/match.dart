@@ -1,52 +1,55 @@
-class Match {
-  final Team teamA;
-  final Team teamB;
-  final DateTime lastPlayed;
+library match;
 
-  Match(this.teamA, this.teamB, this.lastPlayed);
+import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
-  Match.fromMap(Map map)
-      : teamA = Team.fromMap(map['teamA']),
-        teamB = Team.fromMap(map['teamB']),
-        lastPlayed = map['last_played'];
+import 'serializers.dart';
+
+part 'match.g.dart';
+
+abstract class Match implements Built<Match, MatchBuilder> {
+  Team get teamA;
+  Team get teamB;
+  DateTime get lastPlayed;
+
+  Match._();
+
+  factory Match([updates(MatchBuilder b)]) = _$Match;
 
   Map<String, dynamic> toMap() {
-    Map<String, dynamic> map = Map();
-    map["teamA"] = teamA.toMap();
-    map["teamB"] = teamB.toMap();
-    map["last_played"] = DateTime.now();
-    return map;
+    return serializers.serialize(this, specifiedType: FullType(Match))
+        as Map<String, dynamic>;
   }
 
-  @override
-  String toString() => "Match<$teamA vs $teamB, last played: $lastPlayed>";
+  static Match fromMap(Map<String, dynamic> map) {
+    return serializers.deserializeWith(Match.serializer, map);
+  }
+
+  static Serializer<Match> get serializer => _$matchSerializer;
 }
 
-class Team {
-  final String name;
-  final String player1;
-  final String player2;
-  final int wins;
+abstract class Team implements Built<Team, TeamBuilder> {
+  String get name;
 
-  Team(this.name, this.player1, this.player2) : wins = 0;
+  @nullable
+  String get player1;
 
-  Team.fromMap(Map map)
-      : name = map["name"],
-        player1 = map["player1"],
-        player2 = map["player2"],
-        wins = map["wins"];
+  @nullable
+  String get player2;
+
+  int get wins;
+
+  Team._();
+  factory Team([updates(TeamBuilder b)]) = _$Team;
 
   Map<String, dynamic> toMap() {
-    Map<String, dynamic> map = Map();
-    map["name"] = name;
-    map["wins"] = wins;
-    if (player1 != null && player2 != null) {
-      map["player1"] = player1;
-      map["player2"] = player2;
-    }
-    return map;
+    return serializers.serialize(this, specifiedType: FullType(Team))
+        as Map<String, dynamic>;
   }
 
-  @override
-  String toString() => "Team<$name:$player1,$player2. wins: $wins>";
+  static Team fromMap(Map<String, dynamic> map) {
+    return serializers.deserializeWith(Team.serializer, map);
+  }
+
+  static Serializer<Team> get serializer => _$teamSerializer;
 }

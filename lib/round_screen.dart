@@ -97,7 +97,7 @@ class _RoundWidgetState extends State<RoundWidget> {
         ),
         child: ListTile(
           title: Text(
-              "${hand.pointsTeamA} vs ${hand.pointsTeamB} with bid ${hand.bid.getSymbol()}"),
+              "${hand.pointsTeamA} vs ${hand.pointsTeamB} with bid ${hand.actualBid.getSymbol()}"),
           onTap: () => print(round),
         ),
       ),

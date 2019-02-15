@@ -1,15 +1,29 @@
-class Round {
-  final int teamAScore;
-  final int teamBScore;
-  final DateTime lastPlayed;
+library round;
 
-  Round(this.teamAScore, this.teamBScore, this.lastPlayed);
+import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
-  Round.fromMap(Map map)
-      : teamAScore = map['teamA_score'],
-        teamBScore = map['teamB_score'],
-        lastPlayed = map['last_played'];
+import 'serializers.dart';
 
-  @override
-  String toString() => "Round<$teamAScore vs $teamBScore>";
+part 'round.g.dart';
+
+abstract class Round implements Built<Round, RoundBuilder> {
+  int get teamAScore;
+  int get teamBScore;
+  DateTime get lastPlayed;
+
+  Round._();
+
+  factory Round([updates(RoundBuilder b)]) = _$Round;
+
+  Map<String, dynamic> toMap() {
+    return serializers.serialize(this, specifiedType: FullType(Round))
+        as Map<String, dynamic>;
+  }
+
+  static Round fromMap(Map<String, dynamic> map) {
+    return serializers.deserializeWith(Round.serializer, map);
+  }
+
+  static Serializer<Round> get serializer => _$roundSerializer;
 }

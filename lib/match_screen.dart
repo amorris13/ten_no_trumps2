@@ -33,14 +33,14 @@ class MatchScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              Map<String, dynamic> map = Map();
-              map["teamA_score"] = 0;
-              map["teamB_score"] = 0;
-              map["last_played"] = DateTime.now();
+              Round round = new Round((b) => b
+                ..teamAScore = 0
+                ..teamBScore = 0
+                ..lastPlayed = DateTime.now());
 
               DocumentReference roundReference =
                   matchReference.collection("rounds").document();
-              roundReference.setData(map);
+              roundReference.setData(round.toMap());
               Navigator.push(
                 context,
                 MaterialPageRoute(

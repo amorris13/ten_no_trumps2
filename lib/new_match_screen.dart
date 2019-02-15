@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'match_screen.dart';
+import 'model/match.dart';
 
 class NewMatchScreen extends StatefulWidget {
   NewMatchScreen();
@@ -15,7 +16,7 @@ class NewMatchScreen extends StatefulWidget {
 class _NewMatchScreenState extends State<NewMatchScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  NewMatch newMatch = NewMatch();
+  MatchBuilder matchBuilder = MatchBuilder();
 
   _NewMatchScreenState();
 
@@ -48,8 +49,8 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
             ),
             Row(
               children: <Widget>[
-                _teamInput("Team 1", newMatch.teamA),
-                _teamInput("Team 2", newMatch.teamB),
+                _teamInput("Team 1", matchBuilder.teamA),
+                _teamInput("Team 2", matchBuilder.teamB),
               ],
             ),
             Padding(
@@ -68,8 +69,8 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
             ),
             Row(
               children: <Widget>[
-                _playerInput(newMatch.teamA),
-                _playerInput(newMatch.teamB),
+                _playerInput(matchBuilder.teamA),
+                _playerInput(matchBuilder.teamB),
               ],
             ),
             Padding(
@@ -80,10 +81,13 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                   // the form is invalid.
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
+                    matchBuilder.lastPlayed = DateTime.now();
+                    matchBuilder.teamA.wins = 0;
+                    matchBuilder.teamB.wins = 0;
 
                     DocumentReference matchReference =
                         Firestore.instance.collection("matches").document();
-                    matchReference.setData(newMatch.toMap());
+                    matchReference.setData(matchBuilder.build().toMap());
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -100,7 +104,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     );
   }
 
-  Expanded _teamInput(String labelText, NewTeam team) {
+  Expanded _teamInput(String labelText, TeamBuilder team) {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 4.0),
@@ -119,7 +123,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
     );
   }
 
-  Expanded _playerInput(NewTeam team) {
+  Expanded _playerInput(TeamBuilder team) {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 4.0),
@@ -142,41 +146,4 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
       ),
     );
   }
-}
-
-// TODO: reuse existing Match & Team PODOs.
-class NewMatch {
-  NewTeam teamA = NewTeam();
-  NewTeam teamB = NewTeam();
-
-  Map<String, dynamic> toMap() {
-    Map<String, dynamic> map = Map();
-    map["teamA"] = teamA.toMap();
-    map["teamB"] = teamB.toMap();
-    map["last_played"] = DateTime.now();
-    return map;
-  }
-
-  @override
-  String toString() => "NewMatch<$teamA vs $teamB>";
-}
-
-class NewTeam {
-  String name;
-  String player1;
-  String player2;
-
-  Map<String, dynamic> toMap() {
-    Map<String, dynamic> map = Map();
-    map["name"] = name;
-    map["wins"] = 0;
-    if (player1 != null && player2 != null) {
-      map["player1"] = player1;
-      map["player2"] = player2;
-    }
-    return map;
-  }
-
-  @override
-  String toString() => "NewTeam<$name:$player1,$player2>";
 }
