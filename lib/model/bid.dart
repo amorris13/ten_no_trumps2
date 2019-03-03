@@ -113,22 +113,18 @@ class Tricks {
 }
 
 class Suit {
-  static const Suit SPADES = Suit("Spades", "\u2660", Color.BLACK);
-  static const Suit CLUBS = Suit("Clubs", "\u2663", Color.BLACK);
-  static const Suit DIAMONDS = Suit("Diamonds", "\u2666", Color.RED);
-  static const Suit HEARTS = Suit("Hearts", "\u2665", Color.RED);
-  static const Suit NOTRUMPS = Suit("No Trumps", "NT", Color.BLACK);
-  static const Suit CLOSEDMISERE = Suit("Closed Misere", "CM", Color.BLACK);
-  static const Suit OPENMISERE = Suit("Open Misere", "OM", Color.BLACK);
+  static const Suit SPADES = Suit("Spades", "\u2660");
+  static const Suit CLUBS = Suit("Clubs", "\u2663");
+  static const Suit DIAMONDS = Suit("Diamonds", "\u2666");
+  static const Suit HEARTS = Suit("Hearts", "\u2665");
+  static const Suit NOTRUMPS = Suit("No Trumps", "NT");
+  static const Suit CLOSEDMISERE = Suit("Closed Misere", "CM");
+  static const Suit OPENMISERE = Suit("Open Misere", "OM");
 
   final String name;
   final String symbol;
-  final Color color;
-
-  const Suit(this.name, this.symbol, this.color);
+  const Suit(this.name, this.symbol);
 
   @override
   String toString() => name;
 }
-
-enum Color { BLACK, RED }

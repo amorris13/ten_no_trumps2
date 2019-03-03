@@ -6,19 +6,6 @@ part of hand;
 // BuiltValueGenerator
 // **************************************************************************
 
-// ignore_for_file: always_put_control_body_on_new_line
-// ignore_for_file: annotate_overrides
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_catches_without_on_clauses
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: lines_longer_than_80_chars
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: prefer_expression_function_bodies
-// ignore_for_file: sort_constructors_first
-// ignore_for_file: unnecessary_const
-// ignore_for_file: unnecessary_new
-// ignore_for_file: test_types_in_equals
-
 Serializer<Hand> _$handSerializer = new _$HandSerializer();
 
 class _$HandSerializer implements StructuredSerializer<Hand> {
@@ -39,8 +26,14 @@ class _$HandSerializer implements StructuredSerializer<Hand> {
       'pointsTeamA',
       serializers.serialize(object.pointsTeamA,
           specifiedType: const FullType(int)),
+      'cumPointsTeamA',
+      serializers.serialize(object.cumPointsTeamA,
+          specifiedType: const FullType(int)),
       'pointsTeamB',
       serializers.serialize(object.pointsTeamB,
+          specifiedType: const FullType(int)),
+      'cumPointsTeamB',
+      serializers.serialize(object.cumPointsTeamB,
           specifiedType: const FullType(int)),
       'tricksWon',
       serializers.serialize(object.tricksWon,
@@ -93,8 +86,16 @@ class _$HandSerializer implements StructuredSerializer<Hand> {
           result.pointsTeamA = serializers.deserialize(value,
               specifiedType: const FullType(int)) as int;
           break;
+        case 'cumPointsTeamA':
+          result.cumPointsTeamA = serializers.deserialize(value,
+              specifiedType: const FullType(int)) as int;
+          break;
         case 'pointsTeamB':
           result.pointsTeamB = serializers.deserialize(value,
+              specifiedType: const FullType(int)) as int;
+          break;
+        case 'cumPointsTeamB':
+          result.cumPointsTeamB = serializers.deserialize(value,
               specifiedType: const FullType(int)) as int;
           break;
         case 'tricksWon':
@@ -120,7 +121,11 @@ class _$Hand extends Hand {
   @override
   final int pointsTeamA;
   @override
+  final int cumPointsTeamA;
+  @override
   final int pointsTeamB;
+  @override
+  final int cumPointsTeamB;
   @override
   final int tricksWon;
   Bid __actualBid;
@@ -134,7 +139,9 @@ class _$Hand extends Hand {
       this.biddingTeam,
       this.dealer,
       this.pointsTeamA,
+      this.cumPointsTeamA,
       this.pointsTeamB,
+      this.cumPointsTeamB,
       this.tricksWon})
       : super._() {
     if (bid == null) {
@@ -146,8 +153,14 @@ class _$Hand extends Hand {
     if (pointsTeamA == null) {
       throw new BuiltValueNullFieldError('Hand', 'pointsTeamA');
     }
+    if (cumPointsTeamA == null) {
+      throw new BuiltValueNullFieldError('Hand', 'cumPointsTeamA');
+    }
     if (pointsTeamB == null) {
       throw new BuiltValueNullFieldError('Hand', 'pointsTeamB');
+    }
+    if (cumPointsTeamB == null) {
+      throw new BuiltValueNullFieldError('Hand', 'cumPointsTeamB');
     }
     if (tricksWon == null) {
       throw new BuiltValueNullFieldError('Hand', 'tricksWon');
@@ -173,7 +186,9 @@ class _$Hand extends Hand {
         biddingTeam == other.biddingTeam &&
         dealer == other.dealer &&
         pointsTeamA == other.pointsTeamA &&
+        cumPointsTeamA == other.cumPointsTeamA &&
         pointsTeamB == other.pointsTeamB &&
+        cumPointsTeamB == other.cumPointsTeamB &&
         tricksWon == other.tricksWon;
   }
 
@@ -183,11 +198,17 @@ class _$Hand extends Hand {
         $jc(
             $jc(
                 $jc(
-                    $jc($jc($jc(0, bid.hashCode), biddingPlayer.hashCode),
-                        biddingTeam.hashCode),
-                    dealer.hashCode),
-                pointsTeamA.hashCode),
-            pointsTeamB.hashCode),
+                    $jc(
+                        $jc(
+                            $jc(
+                                $jc($jc(0, bid.hashCode),
+                                    biddingPlayer.hashCode),
+                                biddingTeam.hashCode),
+                            dealer.hashCode),
+                        pointsTeamA.hashCode),
+                    cumPointsTeamA.hashCode),
+                pointsTeamB.hashCode),
+            cumPointsTeamB.hashCode),
         tricksWon.hashCode));
   }
 
@@ -199,7 +220,9 @@ class _$Hand extends Hand {
           ..add('biddingTeam', biddingTeam)
           ..add('dealer', dealer)
           ..add('pointsTeamA', pointsTeamA)
+          ..add('cumPointsTeamA', cumPointsTeamA)
           ..add('pointsTeamB', pointsTeamB)
+          ..add('cumPointsTeamB', cumPointsTeamB)
           ..add('tricksWon', tricksWon))
         .toString();
   }
@@ -228,9 +251,19 @@ class HandBuilder implements Builder<Hand, HandBuilder> {
   int get pointsTeamA => _$this._pointsTeamA;
   set pointsTeamA(int pointsTeamA) => _$this._pointsTeamA = pointsTeamA;
 
+  int _cumPointsTeamA;
+  int get cumPointsTeamA => _$this._cumPointsTeamA;
+  set cumPointsTeamA(int cumPointsTeamA) =>
+      _$this._cumPointsTeamA = cumPointsTeamA;
+
   int _pointsTeamB;
   int get pointsTeamB => _$this._pointsTeamB;
   set pointsTeamB(int pointsTeamB) => _$this._pointsTeamB = pointsTeamB;
+
+  int _cumPointsTeamB;
+  int get cumPointsTeamB => _$this._cumPointsTeamB;
+  set cumPointsTeamB(int cumPointsTeamB) =>
+      _$this._cumPointsTeamB = cumPointsTeamB;
 
   int _tricksWon;
   int get tricksWon => _$this._tricksWon;
@@ -245,7 +278,9 @@ class HandBuilder implements Builder<Hand, HandBuilder> {
       _biddingTeam = _$v.biddingTeam;
       _dealer = _$v.dealer;
       _pointsTeamA = _$v.pointsTeamA;
+      _cumPointsTeamA = _$v.cumPointsTeamA;
       _pointsTeamB = _$v.pointsTeamB;
+      _cumPointsTeamB = _$v.cumPointsTeamB;
       _tricksWon = _$v.tricksWon;
       _$v = null;
     }
@@ -274,9 +309,13 @@ class HandBuilder implements Builder<Hand, HandBuilder> {
             biddingTeam: biddingTeam,
             dealer: dealer,
             pointsTeamA: pointsTeamA,
+            cumPointsTeamA: cumPointsTeamA,
             pointsTeamB: pointsTeamB,
+            cumPointsTeamB: cumPointsTeamB,
             tricksWon: tricksWon);
     replace(_$result);
     return _$result;
   }
 }
+
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

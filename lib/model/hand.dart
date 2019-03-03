@@ -19,7 +19,9 @@ abstract class Hand implements Built<Hand, HandBuilder> {
   @nullable
   int get dealer;
   int get pointsTeamA;
+  int get cumPointsTeamA;
   int get pointsTeamB;
+  int get cumPointsTeamB;
   int get tricksWon;
 
   Hand._();

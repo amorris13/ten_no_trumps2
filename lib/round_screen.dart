@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'model/bid.dart';
 import 'model/hand.dart';
 import 'model/match.dart';
 import 'model/round.dart';
@@ -79,29 +80,132 @@ class _RoundWidgetState extends State<RoundWidget> {
   }
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-    return ListView(
-      padding: const EdgeInsets.only(top: 20.0),
-      children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+    return ListView.separated(
+      separatorBuilder: (context, index) => Divider(
+            color: Colors.grey,
+            height: 0.0,
+          ),
+      itemCount: snapshot.length,
+      itemBuilder: (context, index) => _buildListItem(
+          context, snapshot[index], index == snapshot.length - 1),
     );
   }
 
-  Widget _buildListItem(BuildContext context, DocumentSnapshot handSnapshot) {
+  Widget _buildListItem(
+      BuildContext context, DocumentSnapshot handSnapshot, bool isLast) {
     final hand = Hand.fromMap(handSnapshot.data);
+
+    TextStyle mainStyle = Theme.of(context).textTheme.subhead;
+    int winsFlex = 1;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        child: ListTile(
-          title: Text(
-              "${hand.pointsTeamA} vs ${hand.pointsTeamB} with bid ${hand.actualBid.getSymbol()}"),
-          onTap: () => print(round),
-        ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            flex: winsFlex,
+            child: _buildTeamDetails(
+                hand.biddingTeam == 0,
+                hand.tricksWon,
+                hand.pointsTeamA,
+                hand.cumPointsTeamA,
+                hand.actualBid,
+                isLast,
+                false),
+          ),
+          Expanded(
+            flex: 0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Text(
+                ":",
+                textAlign: TextAlign.center,
+                style: mainStyle,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: winsFlex,
+            child: _buildTeamDetails(
+                hand.biddingTeam == 1,
+                hand.tricksWon,
+                hand.pointsTeamB,
+                hand.cumPointsTeamB,
+                hand.actualBid,
+                isLast,
+                true),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildTeamDetails(bool biddingTeam, int tricksWonByBiddingTeam,
+      int points, int cumPoints, Bid bid, bool isLast, bool reversed) {
+    TextStyle mainStyle = Theme.of(context).textTheme.subhead;
+    int tricksWonByTeam =
+        biddingTeam ? tricksWonByBiddingTeam : 10 - tricksWonByBiddingTeam;
+
+    var children = <Widget>[
+      Expanded(
+        flex: 1,
+        child: Text(
+          biddingTeam ? bid.getSymbol() : "",
+          textAlign: reversed ? TextAlign.right : TextAlign.left,
+          style: mainStyle,
+        ),
+      ),
+      Expanded(
+        flex: 3,
+        child: Column(
+          children: <Widget>[
+            Text(
+              "won $tricksWonByTeam",
+              style: mainStyle,
+              textScaleFactor: 0.85,
+            ),
+            Text(
+              "${_getSign(points)}$points",
+              style: mainStyle.apply(
+                color: _getColor(points, biddingTeam),
+              ),
+              textScaleFactor: 0.85,
+            ),
+          ],
+        ),
+      ),
+      Expanded(
+        flex: 1,
+        child: Text(
+          cumPoints.toString(),
+          textAlign: reversed ? TextAlign.left : TextAlign.right,
+          style: mainStyle.apply(
+              decoration:
+                  isLast ? TextDecoration.none : TextDecoration.lineThrough),
+        ),
+      ),
+    ];
+
+    return Row(
+        children: reversed ? children.reversed.toList() : children.toList());
+  }
+
+  static String _getSign(int points) {
+    if (points > 0) {
+      return "+";
+    } else if (points < 0) {
+      return "-";
+    } else {
+      return "";
+    }
+  }
+
+  static Color _getColor(int points, bool biddingTeam) {
+    if (biddingTeam) {
+      return points > 0 ? Colors.green[700] : Colors.red[700];
+    } else {
+      return null;
+    }
   }
 }
 
