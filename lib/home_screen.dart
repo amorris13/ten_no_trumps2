@@ -9,13 +9,21 @@ import 'model/match.dart';
 import 'new_match_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  final FirebaseUser user;
+
+  HomeScreen(this.user);
+
   @override
   _HomeScreenState createState() {
-    return _HomeScreenState();
+    return _HomeScreenState(user);
   }
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final FirebaseUser user;
+
+  _HomeScreenState(this.user);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,18 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    _auth.currentUser().then((user) {
-      if (user != null) {
-        // send the user to the home page
-        // homePage();
-      } else {
-        _auth.signInAnonymously();
-      }
-    });
-
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('matches').snapshots(),
+      stream: Firestore.instance
+          .collection('matches')
+          .where("users", arrayContains: user.uid)
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
