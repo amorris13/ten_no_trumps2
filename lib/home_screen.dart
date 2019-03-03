@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -36,6 +37,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    _auth.currentUser().then((user) {
+      if (user != null) {
+        // send the user to the home page
+        // homePage();
+      } else {
+        _auth.signInAnonymously();
+      }
+    });
+
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('matches').snapshots(),
       builder: (context, snapshot) {
