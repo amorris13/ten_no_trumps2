@@ -6,6 +6,7 @@ import 'model/bid.dart';
 import 'model/hand.dart';
 import 'model/match.dart';
 import 'model/round.dart';
+import 'new_hand_screen.dart';
 
 class RoundScreen extends StatelessWidget {
   final DocumentReference matchReference;
@@ -63,7 +64,21 @@ class _RoundWidgetState extends State<RoundWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("${match.teamA.name} vs ${match.teamB.name}")),
+      appBar: AppBar(
+        title: Text("${match.teamA.name} vs ${match.teamB.name}"),
+        actions: <Widget>[
+          // action button
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      NewHandScreen(this.matchReference, this.roundReference),
+                )),
+          ),
+        ],
+      ),
       body: _buildBody(context),
     );
   }
