@@ -34,7 +34,7 @@ class _$MatchSerializer implements StructuredSerializer<Match> {
   @override
   Match deserialize(Serializers serializers, Iterable serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new HandBuilder();
+    final result = new MatchBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -134,8 +134,8 @@ class _$Match extends Match {
   @override
   final DateTime lastPlayed;
 
-  factory _$Match([void updates(HandBuilder b)]) =>
-      (new HandBuilder()..update(updates)).build();
+  factory _$Match([void updates(MatchBuilder b)]) =>
+      (new MatchBuilder()..update(updates)).build();
 
   _$Match._({this.teamA, this.teamB, this.lastPlayed}) : super._() {
     if (teamA == null) {
@@ -150,11 +150,11 @@ class _$Match extends Match {
   }
 
   @override
-  Match rebuild(void updates(HandBuilder b)) =>
+  Match rebuild(void updates(MatchBuilder b)) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  HandBuilder toBuilder() => new HandBuilder()..replace(this);
+  MatchBuilder toBuilder() => new MatchBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -181,7 +181,7 @@ class _$Match extends Match {
   }
 }
 
-class HandBuilder implements Builder<Match, HandBuilder> {
+class MatchBuilder implements Builder<Match, MatchBuilder> {
   _$Match _$v;
 
   TeamBuilder _teamA;
@@ -196,9 +196,9 @@ class HandBuilder implements Builder<Match, HandBuilder> {
   DateTime get lastPlayed => _$this._lastPlayed;
   set lastPlayed(DateTime lastPlayed) => _$this._lastPlayed = lastPlayed;
 
-  HandBuilder();
+  MatchBuilder();
 
-  HandBuilder get _$this {
+  MatchBuilder get _$this {
     if (_$v != null) {
       _teamA = _$v.teamA?.toBuilder();
       _teamB = _$v.teamB?.toBuilder();
@@ -217,7 +217,7 @@ class HandBuilder implements Builder<Match, HandBuilder> {
   }
 
   @override
-  void update(void updates(HandBuilder b)) {
+  void update(void updates(MatchBuilder b)) {
     if (updates != null) updates(this);
   }
 

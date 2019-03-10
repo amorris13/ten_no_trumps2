@@ -16,7 +16,7 @@ class NewMatchScreen extends StatefulWidget {
 class _NewMatchScreenState extends State<NewMatchScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  HandBuilder matchBuilder = HandBuilder();
+  MatchBuilder matchBuilder = MatchBuilder();
 
   _NewMatchScreenState();
 

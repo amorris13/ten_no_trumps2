@@ -7,14 +7,14 @@ import 'serializers.dart';
 
 part 'match.g.dart';
 
-abstract class Match implements Built<Match, HandBuilder> {
+abstract class Match implements Built<Match, MatchBuilder> {
   Team get teamA;
   Team get teamB;
   DateTime get lastPlayed;
 
   Match._();
 
-  factory Match([updates(HandBuilder b)]) = _$Match;
+  factory Match([updates(MatchBuilder b)]) = _$Match;
 
   Map<String, dynamic> toMap() {
     return serializers.serialize(this, specifiedType: FullType(Match))
