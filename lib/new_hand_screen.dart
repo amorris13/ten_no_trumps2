@@ -153,7 +153,45 @@ class _NewHandScreenState extends State<NewHandScreen> {
       )
     ]);
 
-    entries.addAll([new SectionTitle("Tricks Won")]);
+    entries.addAll([
+      new SectionTitle("Tricks Won"),
+      FormField<int>(
+        initialValue: 0,
+        validator: (tricksWon) {
+          if (tricksWon == null) {
+            return 'Tricks Won must be set';
+          }
+        },
+        onSaved: (tricksWon) {
+          handBuilder.tricksWon = tricksWon;
+        },
+        builder: (FormFieldState<int> state) {
+          var rows = <Widget>[];
+          rows.add(Row(children: <Widget>[
+            Expanded(
+              child: SliderTheme(
+                data: SliderTheme.of(context)
+                    .copyWith(showValueIndicator: ShowValueIndicator.always),
+                child: Slider(
+                    min: 0.0,
+                    max: Bid.TRICKS_PER_HAND.toDouble(),
+                    value: state.value.toDouble(),
+                    label: state.value.toString(),
+                    onChanged: (value) {
+                      state.didChange(value.toInt());
+                    },
+                    divisions: Bid.TRICKS_PER_HAND),
+              ),
+            ),
+            Text(state.value.toString()),
+          ]));
+          if (state.hasError) {
+            rows.add(new ErrorWidget(state.errorText));
+          }
+          return Column(children: rows);
+        },
+      ),
+    ]);
 
     entries.add(Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
