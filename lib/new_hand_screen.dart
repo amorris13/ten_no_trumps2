@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:quiver/collection.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'model/bid.dart';
 import 'model/hand.dart';
@@ -42,143 +43,167 @@ class _NewHandScreenState extends State<NewHandScreen> {
   }
 
   Widget _buildBody(BuildContext context, Match match) {
-    var biddingTeamField = FormField<int>(
-      initialValue: null,
-      validator: (team) {
-        if (team == null) {
-          return 'Team must be set';
-        }
-      },
-      onSaved: (team) {
-        handBuilder.biddingTeam = team;
-      },
-      builder: (FormFieldState<int> state) {
-        var rows = <Widget>[];
-        rows.add(Row(children: <Widget>[
-          teamButton(state, match.teamA, 0, context),
-          teamButton(state, match.teamB, 1, context),
-        ]));
-        if (state.hasError) {
-          rows.add(new ErrorWidget(state.errorText));
-        }
-        return Column(children: rows);
-      },
-    );
+    var entries = <Widget>[];
+    BehaviorSubject<int> biddingTeamSubject = BehaviorSubject();
+    entries.addAll([
+      new SectionTitle("Bidding Team"),
+      FormField<int>(
+        initialValue: null,
+        validator: (team) {
+          if (team == null) {
+            return 'Team must be set';
+          }
+        },
+        onSaved: (team) {
+          handBuilder.biddingTeam = team;
+        },
+        builder: (FormFieldState<int> state) {
+          var rows = <Widget>[];
+          rows.add(Row(
+              children: Iterable.generate(Match.NUM_TEAMS)
+                  .map((teamNumber) => teamButton(
+                      context,
+                      state,
+                      match.getTeam(teamNumber),
+                      teamNumber,
+                      biddingTeamSubject))
+                  .toList()));
+          if (state.hasError) {
+            rows.add(new ErrorWidget(state.errorText));
+          }
+          return Column(children: rows);
+        },
+      ),
+    ]);
 
-    var biddingPlayerField = FormField<int>(
-      initialValue: null,
-      onSaved: (player) {
-        handBuilder.biddingPlayer = player;
-      },
-      builder: (FormFieldState<int> state) {
-        var rows = <Widget>[];
-        rows.add(Row(
-          children: <Widget>[
-            playerColumn(state, match.teamA, 0, context),
-            playerColumn(state, match.teamB, 1, context),
-          ],
-        ));
-        if (state.hasError) {
-          rows.add(new ErrorWidget(state.errorText));
-        }
-        return Column(children: rows);
-      },
-    );
+    if (match.hasPlayerNames()) {
+      entries.addAll([
+        new SectionTitle("Bidding Player"),
+        StreamBuilder<int>(
+            stream: biddingTeamSubject.stream,
+            builder: (context, biddingTeam) {
+              int biddingTeamNumber = biddingTeam.data;
 
-    var bidsField = FormField<Bid>(
-      initialValue: null,
-      validator: (bid) {
-        if (bid == null) {
-          return 'Bid must be set';
-        }
-      },
-      onSaved: (bid) {
-        handBuilder.bid = bid.toFullString();
-      },
-      builder: (FormFieldState<Bid> state) {
-        Multimap<Tricks, Bid> bidsByTricks = Multimap.fromIterable(Bid.BIDS,
-            key: (bid) => bid.tricks, value: (bid) => bid);
-        var rows = <Widget>[];
-        bidsByTricks.forEachKey((tricks, bids) {
-          var buttons = <Widget>[];
-          bids.forEach((bid) {
-            bool isSelected = state.value == bid;
-            buttons.add(Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.0),
-                child: new SelectionButton(
-                    isSelected: isSelected,
-                    onPressed: () {
-                      state.didChange(isSelected ? null : bid);
-                    },
-                    text: bid.getSymbol()),
-              ),
-            ));
+              return FormField<int>(
+                initialValue: null,
+                onSaved: (player) {
+                  handBuilder.biddingPlayer = player;
+                },
+                builder: (FormFieldState<int> state) {
+                  var rows = <Widget>[];
+                  rows.add(Row(
+                    children: Iterable.generate(Match.NUM_TEAMS)
+                        .map((teamNumber) => playerColumn(
+                            context,
+                            state,
+                            match.getTeam(teamNumber),
+                            teamNumber,
+                            biddingTeamNumber))
+                        .toList(),
+                  ));
+                  if (state.hasError) {
+                    rows.add(new ErrorWidget(state.errorText));
+                  }
+                  return Column(children: rows);
+                },
+              );
+            })
+      ]);
+    }
+
+    entries.addAll([
+      new SectionTitle("Bids"),
+      FormField<Bid>(
+        initialValue: null,
+        validator: (bid) {
+          if (bid == null) {
+            return 'Bid must be set';
+          }
+        },
+        onSaved: (bid) {
+          handBuilder.bid = bid.toFullString();
+        },
+        builder: (FormFieldState<Bid> state) {
+          Multimap<Tricks, Bid> bidsByTricks = Multimap.fromIterable(Bid.BIDS,
+              key: (bid) => bid.tricks, value: (bid) => bid);
+          var rows = <Widget>[];
+          bidsByTricks.forEachKey((tricks, bids) {
+            var buttons = <Widget>[];
+            bids.forEach((bid) {
+              bool isSelected = state.value == bid;
+              buttons.add(Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.0),
+                  child: new SelectionButton(
+                      isSelected: isSelected,
+                      onPressed: () {
+                        state.didChange(isSelected ? null : bid);
+                      },
+                      text: bid.getSymbol()),
+                ),
+              ));
+            });
+            rows.add(Row(children: buttons));
           });
-          rows.add(Row(children: buttons));
-        });
-        if (state.hasError) {
-          rows.add(new ErrorWidget(state.errorText));
-        }
-        return Column(children: rows);
-      },
-    );
+          if (state.hasError) {
+            rows.add(new ErrorWidget(state.errorText));
+          }
+          return Column(children: rows);
+        },
+      )
+    ]);
 
+    entries.addAll([new SectionTitle("Tricks Won")]);
+
+    entries.add(Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: OutlineButton(
+        onPressed: () {
+          // Validate will return true if the form is valid, or false if
+          // the form is invalid.
+          if (_formKey.currentState.validate()) {
+            _formKey.currentState.save();
+            // matchBuilder.lastPlayed = DateTime.now();
+            // matchBuilder.teamA.wins = 0;
+            // matchBuilder.teamB.wins = 0;
+
+            // DocumentReference matchReference =
+            //     Firestore.instance.collection("matches").document();
+            // matchReference.setData(matchBuilder.build().toMap());
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(
+            //       builder: (context) => MatchScreen(matchReference)),
+            // );
+          }
+        },
+        child: Text('OK'),
+      ),
+    ));
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
         child: Form(
           key: _formKey,
           child: Column(
-            children: <Widget>[
-              new SectionTitle("Bidding Team"),
-              biddingTeamField,
-              new SectionTitle("Bidding Player"),
-              biddingPlayerField,
-              new SectionTitle("Bids"),
-              bidsField,
-              new SectionTitle("Tricks Won"),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: OutlineButton(
-                  onPressed: () {
-                    // Validate will return true if the form is valid, or false if
-                    // the form is invalid.
-                    if (_formKey.currentState.validate()) {
-                      _formKey.currentState.save();
-                      // matchBuilder.lastPlayed = DateTime.now();
-                      // matchBuilder.teamA.wins = 0;
-                      // matchBuilder.teamB.wins = 0;
-
-                      // DocumentReference matchReference =
-                      //     Firestore.instance.collection("matches").document();
-                      // matchReference.setData(matchBuilder.build().toMap());
-                      // Navigator.pushReplacement(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => MatchScreen(matchReference)),
-                      // );
-                    }
-                  },
-                  child: Text('OK'),
-                ),
-              ),
-            ],
+            children: entries,
           ),
         ),
       ),
     );
   }
 
-  Expanded teamButton(FormFieldState<int> state, Team team, int teamNumber,
-      BuildContext context) {
+  Expanded teamButton(BuildContext context, FormFieldState<int> state,
+      Team team, int teamNumber, Subject<int> biddingTeamSubject) {
     bool isSelected = state.value == teamNumber;
     return Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 4.0),
         child: SelectionButton(
           onPressed: () {
-            state.didChange(isSelected ? null : teamNumber);
+            var biddingTeam = isSelected ? null : teamNumber;
+            state.didChange(biddingTeam);
+            biddingTeamSubject.add(biddingTeam);
           },
           isSelected: isSelected,
           text: team.name,
@@ -187,18 +212,25 @@ class _NewHandScreenState extends State<NewHandScreen> {
     );
   }
 
-  Widget playerColumn(FormFieldState<int> state, Team team, int playerOffset,
-      BuildContext context) {
+  Widget playerColumn(BuildContext context, FormFieldState<int> state,
+      Team team, int teamNumber, int biddingTeamNumber) {
+    bool enabled = biddingTeamNumber == teamNumber;
     return Expanded(
-      child: Column(children: <Widget>[
-        playerButton(state, team.player1, playerOffset + 0, context),
-        playerButton(state, team.player2, playerOffset + 2, context),
-      ]),
+      child: Column(
+        children: Iterable.generate(Team.NUM_PLAYERS)
+            .map((playerWithinTeamNumber) => playerButton(
+                context,
+                state,
+                team.getPlayerName(playerWithinTeamNumber),
+                teamNumber * Match.NUM_TEAMS + playerWithinTeamNumber,
+                enabled))
+            .toList(),
+      ),
     );
   }
 
-  Widget playerButton(FormFieldState<int> state, String playerName,
-      int playerNumber, BuildContext context) {
+  Widget playerButton(BuildContext context, FormFieldState<int> state,
+      String playerName, int playerNumber, bool enabled) {
     bool isSelected = state.value == playerNumber;
     return Row(
       children: <Widget>[
@@ -211,6 +243,7 @@ class _NewHandScreenState extends State<NewHandScreen> {
               },
               isSelected: isSelected,
               text: playerName,
+              enabled: enabled,
             ),
           ),
         ),
@@ -225,16 +258,18 @@ class SelectionButton extends StatelessWidget {
     @required this.onPressed,
     @required this.text,
     @required this.isSelected,
+    this.enabled = true,
   }) : super(key: key);
 
   final VoidCallback onPressed;
   final bool isSelected;
   final String text;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     return OutlineButton(
-      onPressed: onPressed,
+      onPressed: enabled ? onPressed : null,
       padding: const EdgeInsets.all(0.0),
       child: Text(text, maxLines: 1),
       borderSide: isSelected
