@@ -22,7 +22,7 @@ abstract class Match implements Built<Match, MatchBuilder> {
     return [teamA, teamB];
   }
 
-  bool isPlayerOnTeam(int teamNumber, int playerNumber) {
+  static bool isPlayerOnTeam(int teamNumber, int playerNumber) {
     return playerNumber % NUM_TEAMS == teamNumber;
   }
 
@@ -39,6 +39,10 @@ abstract class Match implements Built<Match, MatchBuilder> {
 
   Team getTeamForPlayerNumber(int playerNumber) {
     return getTeam(playerNumber % NUM_TEAMS);
+  }
+
+  static int getPlayerNumber(int teamNumber, int playerWithinTeamNumber) {
+    return playerWithinTeamNumber * Match.NUM_TEAMS + teamNumber;
   }
 
   String getPlayerName(int playerNumber) {

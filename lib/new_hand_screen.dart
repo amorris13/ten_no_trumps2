@@ -83,6 +83,7 @@ class _NewHandScreenState extends State<NewHandScreen> {
             stream: biddingTeamSubject.stream,
             builder: (context, biddingTeam) {
               int biddingTeamNumber = biddingTeam.data;
+              print("bidding player builder. bidding team: $biddingTeamNumber");
 
               return FormField<int>(
                 initialValue: null,
@@ -90,6 +91,11 @@ class _NewHandScreenState extends State<NewHandScreen> {
                   handBuilder.biddingPlayer = player;
                 },
                 builder: (FormFieldState<int> state) {
+                  if (state.value != null) {
+                    if (!Match.isPlayerOnTeam(biddingTeamNumber, state.value)) {
+                      state.reset();
+                    }
+                  }
                   var rows = <Widget>[];
                   rows.add(Row(
                     children: Iterable.generate(Match.NUM_TEAMS)
@@ -260,7 +266,7 @@ class _NewHandScreenState extends State<NewHandScreen> {
                 context,
                 state,
                 team.getPlayerName(playerWithinTeamNumber),
-                teamNumber * Match.NUM_TEAMS + playerWithinTeamNumber,
+                Match.getPlayerNumber(teamNumber, playerWithinTeamNumber),
                 enabled))
             .toList(),
       ),
