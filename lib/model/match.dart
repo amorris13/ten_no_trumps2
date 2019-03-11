@@ -47,7 +47,7 @@ abstract class Match implements Built<Match, MatchBuilder> {
 
   String getPlayerName(int playerNumber) {
     Team team = getTeamForPlayerNumber(playerNumber);
-    switch (playerNumber / NUM_TEAMS) {
+    switch (playerNumber ~/ NUM_TEAMS) {
       case 0:
         return team.player1;
       case 1:
