@@ -9,7 +9,9 @@ part of serializers;
 Serializers _$serializers = (new Serializers().toBuilder()
       ..add(Hand.serializer)
       ..add(Match.serializer)
+      ..add(NonBiddingPointsEnum.serializer)
       ..add(Round.serializer)
+      ..add(ScoringPrefs.serializer)
       ..add(Team.serializer))
     .build();
 
