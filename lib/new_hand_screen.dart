@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:quiver/collection.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'formatters.dart';
 import 'model/bid.dart';
 import 'model/hand.dart';
 import 'model/match.dart';
+import 'model/round.dart';
+import 'model/scoring.dart';
 
 class NewHandScreen extends StatefulWidget {
   final DocumentReference matchReference;
@@ -15,34 +18,42 @@ class NewHandScreen extends StatefulWidget {
 
   @override
   _NewHandScreenState createState() {
-    return _NewHandScreenState(matchReference);
+    return _NewHandScreenState(matchReference, roundReference);
   }
 }
 
 class _NewHandScreenState extends State<NewHandScreen> {
   final _formKey = GlobalKey<FormState>();
   final DocumentReference matchReference;
+  final DocumentReference roundReference;
 
   HandBuilder handBuilder = HandBuilder();
 
-  _NewHandScreenState(this.matchReference);
+  _NewHandScreenState(this.matchReference, this.roundReference);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("New Hand")),
-      body: StreamBuilder<DocumentSnapshot>(
-        stream: matchReference.snapshots(),
+      body: StreamBuilder<Snapshots>(
+        stream: Observable.combineLatest2(
+            matchReference.snapshots(),
+            roundReference.snapshots(),
+            (matchSnapshot, roundSnapshot) =>
+                Snapshots(matchSnapshot, roundSnapshot)),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
 
-          return _buildBody(context, Match.fromMap(snapshot.data.data));
+          return _buildBody(
+              context,
+              Match.fromMap(snapshot.data.matchSnapshot.data),
+              Round.fromMap(snapshot.data.roundSnapshot.data));
         },
       ),
     );
   }
 
-  Widget _buildBody(BuildContext context, Match match) {
+  Widget _buildBody(BuildContext context, Match match, Round round) {
     var entries = <Widget>[];
     BehaviorSubject<int> biddingTeamSubject = BehaviorSubject();
     entries.addAll([
@@ -117,6 +128,7 @@ class _NewHandScreenState extends State<NewHandScreen> {
       ]);
     }
 
+    BehaviorSubject<Bid> bidSubject = BehaviorSubject();
     entries.addAll([
       new SectionTitle("Bids"),
       FormField<Bid>(
@@ -143,7 +155,9 @@ class _NewHandScreenState extends State<NewHandScreen> {
                   child: new SelectionButton(
                       isSelected: isSelected,
                       onPressed: () {
-                        state.didChange(isSelected ? null : bid);
+                        Bid newBid = isSelected ? null : bid;
+                        state.didChange(newBid);
+                        bidSubject.add(newBid);
                       },
                       text: bid.getSymbol()),
                 ),
@@ -159,6 +173,7 @@ class _NewHandScreenState extends State<NewHandScreen> {
       )
     ]);
 
+    BehaviorSubject<int> tricksWonSubject = BehaviorSubject();
     entries.addAll([
       new SectionTitle("Tricks Won"),
       FormField<int>(
@@ -184,7 +199,9 @@ class _NewHandScreenState extends State<NewHandScreen> {
                     value: state.value.toDouble(),
                     label: state.value.toString(),
                     onChanged: (value) {
-                      state.didChange(value.toInt());
+                      int tricksWon = value.toInt();
+                      state.didChange(tricksWon);
+                      tricksWonSubject.add(tricksWon);
                     },
                     divisions: Bid.TRICKS_PER_HAND),
               ),
@@ -198,6 +215,48 @@ class _NewHandScreenState extends State<NewHandScreen> {
         },
       ),
     ]);
+
+    Scoring scoring = Scoring(round.scoringPrefsNonNull);
+    entries.add(
+      StreamBuilder<BidSummary>(
+        stream: Observable.combineLatest3(
+            biddingTeamSubject.stream,
+            bidSubject.stream,
+            tricksWonSubject.stream,
+            (biddingTeam, bid, tricksWon) =>
+                BidSummary(biddingTeam, bid, tricksWon)),
+        builder: (context, snapshot) {
+          BidSummary bidSummary = snapshot.data;
+          return Row(
+              children: Iterable.generate(Match.NUM_TEAMS).map((teamNumber) {
+            TextStyle style = Theme.of(context).textTheme.title;
+            if (bidSummary == null || !bidSummary.allSet()) {
+              return Expanded(
+                child: Text(
+                  "-",
+                  style: style,
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
+            bool biddingTeam = teamNumber == bidSummary.biddingTeam;
+            int points = biddingTeam
+                ? scoring.calcBiddersScore(bidSummary.bid, bidSummary.tricksWon)
+                : scoring.calcNonBiddersScore(
+                    bidSummary.bid, bidSummary.tricksWon);
+            return Expanded(
+              child: Text(
+                Formatters.formatPoints(points),
+                style: style.apply(
+                  color: Formatters.getColor(points, biddingTeam),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }).toList());
+        },
+      ),
+    );
 
     entries.add(Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -367,5 +426,24 @@ class ErrorWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class Snapshots {
+  final DocumentSnapshot matchSnapshot;
+  final DocumentSnapshot roundSnapshot;
+
+  Snapshots(this.matchSnapshot, this.roundSnapshot);
+}
+
+class BidSummary {
+  final int biddingTeam;
+  final Bid bid;
+  final int tricksWon;
+
+  BidSummary(this.biddingTeam, this.bid, this.tricksWon);
+
+  bool allSet() {
+    return biddingTeam != null && bid != null && tricksWon != null;
   }
 }

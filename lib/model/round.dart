@@ -3,6 +3,7 @@ library round;
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
+import 'scoring_prefs.dart';
 import 'serializers.dart';
 
 part 'round.g.dart';
@@ -11,6 +12,11 @@ abstract class Round implements Built<Round, RoundBuilder> {
   int get teamAScore;
   int get teamBScore;
   DateTime get lastPlayed;
+  @nullable
+  ScoringPrefs get scoringPrefs;
+  @memoized
+  ScoringPrefs get scoringPrefsNonNull =>
+      scoringPrefs == null ? ScoringPrefs.createDefault() : scoringPrefs;
 
   Round._();
 

@@ -27,6 +27,13 @@ abstract class ScoringPrefs
   }
 
   static Serializer<ScoringPrefs> get serializer => _$scoringPrefsSerializer;
+
+  static ScoringPrefs createDefault() {
+    return _$ScoringPrefs._(
+      tenTrickBonus: true,
+      nonBiddingPoints: NonBiddingPointsEnum.always,
+    );
+  }
 }
 
 class NonBiddingPointsEnum extends EnumClass {

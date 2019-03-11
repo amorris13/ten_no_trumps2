@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'formatters.dart';
 import 'model/bid.dart';
 import 'model/hand.dart';
 import 'model/match.dart';
@@ -180,9 +181,9 @@ class _RoundWidgetState extends State<RoundWidget> {
               textScaleFactor: 0.85,
             ),
             Text(
-              "${_getSign(points)}$points",
+              Formatters.formatPoints(points),
               style: mainStyle.apply(
-                color: _getColor(points, biddingTeam),
+                color: Formatters.getColor(points, biddingTeam),
               ),
               textScaleFactor: 0.85,
             ),
@@ -203,24 +204,6 @@ class _RoundWidgetState extends State<RoundWidget> {
 
     return Row(
         children: reversed ? children.reversed.toList() : children.toList());
-  }
-
-  static String _getSign(int points) {
-    if (points > 0) {
-      return "+";
-    } else if (points < 0) {
-      return "-";
-    } else {
-      return "";
-    }
-  }
-
-  static Color _getColor(int points, bool biddingTeam) {
-    if (biddingTeam) {
-      return points > 0 ? Colors.green[700] : Colors.red[700];
-    } else {
-      return null;
-    }
   }
 }
 

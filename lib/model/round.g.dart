@@ -28,6 +28,12 @@ class _$RoundSerializer implements StructuredSerializer<Round> {
       serializers.serialize(object.lastPlayed,
           specifiedType: const FullType(DateTime)),
     ];
+    if (object.scoringPrefs != null) {
+      result
+        ..add('scoringPrefs')
+        ..add(serializers.serialize(object.scoringPrefs,
+            specifiedType: const FullType(ScoringPrefs)));
+    }
 
     return result;
   }
@@ -55,6 +61,10 @@ class _$RoundSerializer implements StructuredSerializer<Round> {
           result.lastPlayed = serializers.deserialize(value,
               specifiedType: const FullType(DateTime)) as DateTime;
           break;
+        case 'scoringPrefs':
+          result.scoringPrefs.replace(serializers.deserialize(value,
+              specifiedType: const FullType(ScoringPrefs)) as ScoringPrefs);
+          break;
       }
     }
 
@@ -69,11 +79,16 @@ class _$Round extends Round {
   final int teamBScore;
   @override
   final DateTime lastPlayed;
+  @override
+  final ScoringPrefs scoringPrefs;
+  ScoringPrefs __scoringPrefsNonNull;
 
   factory _$Round([void updates(RoundBuilder b)]) =>
       (new RoundBuilder()..update(updates)).build();
 
-  _$Round._({this.teamAScore, this.teamBScore, this.lastPlayed}) : super._() {
+  _$Round._(
+      {this.teamAScore, this.teamBScore, this.lastPlayed, this.scoringPrefs})
+      : super._() {
     if (teamAScore == null) {
       throw new BuiltValueNullFieldError('Round', 'teamAScore');
     }
@@ -84,6 +99,10 @@ class _$Round extends Round {
       throw new BuiltValueNullFieldError('Round', 'lastPlayed');
     }
   }
+
+  @override
+  ScoringPrefs get scoringPrefsNonNull =>
+      __scoringPrefsNonNull ??= super.scoringPrefsNonNull;
 
   @override
   Round rebuild(void updates(RoundBuilder b)) =>
@@ -98,13 +117,16 @@ class _$Round extends Round {
     return other is Round &&
         teamAScore == other.teamAScore &&
         teamBScore == other.teamBScore &&
-        lastPlayed == other.lastPlayed;
+        lastPlayed == other.lastPlayed &&
+        scoringPrefs == other.scoringPrefs;
   }
 
   @override
   int get hashCode {
-    return $jf($jc($jc($jc(0, teamAScore.hashCode), teamBScore.hashCode),
-        lastPlayed.hashCode));
+    return $jf($jc(
+        $jc($jc($jc(0, teamAScore.hashCode), teamBScore.hashCode),
+            lastPlayed.hashCode),
+        scoringPrefs.hashCode));
   }
 
   @override
@@ -112,7 +134,8 @@ class _$Round extends Round {
     return (newBuiltValueToStringHelper('Round')
           ..add('teamAScore', teamAScore)
           ..add('teamBScore', teamBScore)
-          ..add('lastPlayed', lastPlayed))
+          ..add('lastPlayed', lastPlayed)
+          ..add('scoringPrefs', scoringPrefs))
         .toString();
   }
 }
@@ -132,6 +155,12 @@ class RoundBuilder implements Builder<Round, RoundBuilder> {
   DateTime get lastPlayed => _$this._lastPlayed;
   set lastPlayed(DateTime lastPlayed) => _$this._lastPlayed = lastPlayed;
 
+  ScoringPrefsBuilder _scoringPrefs;
+  ScoringPrefsBuilder get scoringPrefs =>
+      _$this._scoringPrefs ??= new ScoringPrefsBuilder();
+  set scoringPrefs(ScoringPrefsBuilder scoringPrefs) =>
+      _$this._scoringPrefs = scoringPrefs;
+
   RoundBuilder();
 
   RoundBuilder get _$this {
@@ -139,6 +168,7 @@ class RoundBuilder implements Builder<Round, RoundBuilder> {
       _teamAScore = _$v.teamAScore;
       _teamBScore = _$v.teamBScore;
       _lastPlayed = _$v.lastPlayed;
+      _scoringPrefs = _$v.scoringPrefs?.toBuilder();
       _$v = null;
     }
     return this;
@@ -159,11 +189,25 @@ class RoundBuilder implements Builder<Round, RoundBuilder> {
 
   @override
   _$Round build() {
-    final _$result = _$v ??
-        new _$Round._(
-            teamAScore: teamAScore,
-            teamBScore: teamBScore,
-            lastPlayed: lastPlayed);
+    _$Round _$result;
+    try {
+      _$result = _$v ??
+          new _$Round._(
+              teamAScore: teamAScore,
+              teamBScore: teamBScore,
+              lastPlayed: lastPlayed,
+              scoringPrefs: _scoringPrefs?.build());
+    } catch (_) {
+      String _$failedField;
+      try {
+        _$failedField = 'scoringPrefs';
+        _scoringPrefs?.build();
+      } catch (e) {
+        throw new BuiltValueNestedFieldError(
+            'Round', _$failedField, e.toString());
+      }
+      rethrow;
+    }
     replace(_$result);
     return _$result;
   }
