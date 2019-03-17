@@ -15,7 +15,7 @@ class LoginState extends State<LoginScreen> {
   void initState() {
     super.initState();
     signIn().then((user) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen(user)),
       );
