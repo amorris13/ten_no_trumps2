@@ -79,11 +79,6 @@ class Bid {
     }
   }
 
-  static Bid getBid(Tricks tricks, Suit suit) {
-    // TODO: calculate correctly.
-    return SIX_CLUBS;
-  }
-
   String toFullString() {
     return (tricks == Tricks.ZERO)
         ? suit.toString()
