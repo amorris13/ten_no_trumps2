@@ -196,12 +196,16 @@ class MatchScreen extends StatelessWidget {
             action: SnackBarAction(
               label: 'Undo',
               onPressed: () {
-                MatchBuilder matchBuilder = match.toBuilder();
-                if (round.finished) {
-                  Match.getTeamBuilder(matchBuilder, round.winningTeam).wins++;
-                }
-                matchReference.setData(matchBuilder.build().toMap(),
-                    merge: true);
+                matchReference.get().then((match) {
+                  MatchBuilder matchBuilder =
+                      Match.fromMap(match.data).toBuilder();
+                  if (round.finished) {
+                    Match.getTeamBuilder(matchBuilder, round.winningTeam)
+                        .wins++;
+                  }
+                  matchReference.setData(matchBuilder.build().toMap(),
+                      merge: true);
+                });
 
                 Firestore.instance
                     .document(roundReference.path)
