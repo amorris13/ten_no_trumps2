@@ -173,7 +173,10 @@ class MatchScreen extends StatelessWidget {
     final round = Round.fromMap(roundSnapshot.data);
     final roundReference = roundSnapshot.reference;
 
-    TextStyle mainStyle = Theme.of(context).textTheme.subhead;
+    TextStyle mainStyle = Theme.of(context)
+        .textTheme
+        .subhead
+        .apply(fontWeightDelta: round.finished ? 0 : 3);
     int winsFlex = 1;
 
     return Dismissible(
