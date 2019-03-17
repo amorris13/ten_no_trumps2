@@ -4,25 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'common_widgets.dart';
+import 'login_screen.dart';
 import 'match_screen.dart';
 import 'model/match.dart';
 import 'new_match_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  final FirebaseUser user;
-
-  HomeScreen(this.user);
+class HomeScreen extends StatelessWidget {
+  HomeScreen();
 
   @override
-  _HomeScreenState createState() {
-    return _HomeScreenState(user);
+  Widget build(BuildContext context) {
+    return StreamBuilder<FirebaseUser>(
+      stream: FirebaseAuth.instance.onAuthStateChanged,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LoginScreen();
+
+        return HomeWidget(snapshot.data);
+      },
+    );
   }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeWidget extends StatelessWidget {
   final FirebaseUser user;
 
-  _HomeScreenState(this.user);
+  HomeWidget(this.user);
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +43,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute(builder: (context) => NewMatchScreen()),
                 ),
+          ),
+          PopupMenuButton<Function>(
+            onSelected: (function) => function.call(),
+            itemBuilder: (BuildContext context) => <PopupMenuItem<Function>>[
+                  PopupMenuItem<Function>(
+                    value: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginScreen()),
+                        ),
+                    child: Text('Login'),
+                  ),
+                ],
           ),
         ],
       ),
@@ -82,9 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
           new LeaveBehindWidget(alignment: Alignment.centerRight),
       key: Key(match.toString()),
       onDismissed: (direction) {
-        setState(() {
-          snapshot.reference.delete();
-        });
+        snapshot.reference.delete();
 
         // Show a snackbar! This snackbar could also contain "Undo" actions.
         Scaffold.of(context).showSnackBar(

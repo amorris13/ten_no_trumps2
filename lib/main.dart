@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
 
-import 'login_screen.dart';
+import 'home_screen.dart';
 
 void main() {
   debugPaintSizeEnabled = false;
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '500 Scorer',
-      home: LoginScreen(),
+      home: HomeScreen(),
       theme: new ThemeData(
         primarySwatch: Colors.blueGrey,
         typography: Typography(
