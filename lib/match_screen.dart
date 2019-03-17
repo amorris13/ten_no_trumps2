@@ -82,7 +82,7 @@ class MatchScreen extends StatelessWidget {
             child: StreamBuilder<QuerySnapshot>(
               stream: matchReference
                   .collection("rounds")
-                  .orderBy("lastPlayed")
+                  .orderBy("lastPlayed", descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return LinearProgressIndicator();
