@@ -25,44 +25,38 @@ class RoundScreen extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
+        print("round screen new snapshot");
+
         Snapshots snapshots = snapshot.data;
-        return RoundWidget(snapshots.matchSnapshot, snapshots.roundSnapshot);
+        return RoundWidget.fromSnapshots(
+            snapshots.matchSnapshot, snapshots.roundSnapshot);
       },
     );
   }
 }
 
-class RoundWidget extends StatefulWidget {
-  final DocumentSnapshot match;
-  final DocumentSnapshot round;
-
-  RoundWidget(this.match, this.round);
-
-  @override
-  _RoundWidgetState createState() {
-    return _RoundWidgetState.fromSnapshots(match, round);
-  }
-}
-
-class _RoundWidgetState extends State<RoundWidget> {
+class RoundWidget extends StatelessWidget {
   final DocumentReference matchReference;
   final Match match;
 
   final DocumentReference roundReference;
   final Round round;
 
-  _RoundWidgetState(
-      this.matchReference, this.match, this.roundReference, this.round);
+  RoundWidget(this.matchReference, this.match, this.roundReference, this.round);
 
-  _RoundWidgetState.fromSnapshots(
-      DocumentSnapshot matchSnapshot, DocumentSnapshot roundSnapshot)
-      : matchReference = matchSnapshot.reference,
-        match = Match.fromMap(matchSnapshot.data),
-        roundReference = roundSnapshot.reference,
-        round = Round.fromMap(roundSnapshot.data);
+  static fromSnapshots(
+      DocumentSnapshot matchSnapshot, DocumentSnapshot roundSnapshot) {
+    return RoundWidget(
+        matchSnapshot.reference,
+        Match.fromMap(matchSnapshot.data),
+        roundSnapshot.reference,
+        Round.fromMap(roundSnapshot.data));
+  }
 
   @override
   Widget build(BuildContext context) {
+    print("round widget building with round $round");
+
     var actions = <Widget>[];
     if (!round.finished) {
       actions.add(IconButton(
@@ -125,7 +119,7 @@ class _RoundWidgetState extends State<RoundWidget> {
         children: <Widget>[
           Expanded(
             flex: winsFlex,
-            child: _buildTeamDetailsSimple(hand, 0, isLast, false),
+            child: _buildTeamDetailsSimple(context, hand, 0, isLast, false),
           ),
           Expanded(
             flex: 0,
@@ -140,15 +134,15 @@ class _RoundWidgetState extends State<RoundWidget> {
           ),
           Expanded(
             flex: winsFlex,
-            child: _buildTeamDetailsSimple(hand, 1, isLast, true),
+            child: _buildTeamDetailsSimple(context, hand, 1, isLast, true),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTeamDetailsSimple(
-      Hand hand, int teamNumber, bool isLast, bool reversed) {
+  Widget _buildTeamDetailsSimple(BuildContext context, Hand hand,
+      int teamNumber, bool isLast, bool reversed) {
     bool biddingTeam = hand.biddingTeam == teamNumber;
 
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
