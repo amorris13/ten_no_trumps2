@@ -113,9 +113,8 @@ class RoundWidget extends StatelessWidget {
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
     int winsFlex = 1;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
+    var rows = <Widget>[
+      Row(
         children: <Widget>[
           Expanded(
             flex: winsFlex,
@@ -137,6 +136,24 @@ class RoundWidget extends StatelessWidget {
             child: _buildTeamDetailsSimple(context, hand, 1, isLast, true),
           ),
         ],
+      ),
+    ];
+
+    if (round.finished && isLast) {
+      String winningTeam = match.getTeam(round.winningTeam).name;
+      rows.add(Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: Text(
+          "$winningTeam has won!",
+          style: Theme.of(context).textTheme.title,
+        ),
+      ));
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Column(
+        children: rows,
       ),
     );
   }
@@ -184,7 +201,13 @@ class RoundWidget extends StatelessWidget {
           textAlign: reversed ? TextAlign.left : TextAlign.right,
           style: mainStyle.apply(
               decoration:
-                  isLast ? TextDecoration.none : TextDecoration.lineThrough),
+                  isLast ? TextDecoration.none : TextDecoration.lineThrough,
+              color: isLast && round.finished
+                  ? teamNumber == round.winningTeam
+                      ? Formatters.winningColor
+                      : Formatters.losingColor
+                  : null,
+              fontWeightDelta: isLast && round.finished ? 2 : 0),
         ),
       ),
     ];
