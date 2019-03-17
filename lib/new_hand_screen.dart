@@ -94,8 +94,6 @@ class _NewHandScreenState extends State<NewHandScreen> {
             stream: biddingTeamSubject.stream,
             builder: (context, biddingTeam) {
               int biddingTeamNumber = biddingTeam.data;
-              print("bidding player builder. bidding team: $biddingTeamNumber");
-
               return FormField<int>(
                 initialValue: null,
                 onSaved: (player) {
@@ -300,14 +298,18 @@ class _NewHandScreenState extends State<NewHandScreen> {
                 roundBuilder.finished = true;
               }
             });
-            roundReference.setData(roundBuilder.build().toMap(), merge: true);
+            Round updatedRound = roundBuilder.build();
+            roundReference.setData(updatedRound.toMap(), merge: true);
 
             MatchBuilder matchBuilder = match.toBuilder()
               ..lastPlayed = hand.timePlayed;
-            if (round.finished) {
-              Match.getTeamBuilder(matchBuilder, round.winningTeam).wins++;
+            if (updatedRound.finished) {
+              TeamBuilder teamBuilder =
+                  Match.getTeamBuilder(matchBuilder, updatedRound.winningTeam);
+              teamBuilder.wins += 1;
             }
-            matchReference.setData(matchBuilder.build().toMap(), merge: true);
+            Match updatedMatch = matchBuilder.build();
+            matchReference.setData(updatedMatch.toMap(), merge: true);
 
             Navigator.pop(context);
           }

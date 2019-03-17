@@ -100,7 +100,7 @@ class _RoundWidgetState extends State<RoundWidget> {
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return ListView.separated(
       separatorBuilder: (context, index) => Divider(
-            color: Colors.grey,
+            color: Theme.of(context).dividerColor,
             height: 0.0,
           ),
       itemCount: snapshot.length,
