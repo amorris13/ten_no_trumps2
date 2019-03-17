@@ -37,6 +37,17 @@ abstract class Match implements Built<Match, MatchBuilder> {
     }
   }
 
+  static TeamBuilder getTeamBuilder(MatchBuilder matchBuilder, int teamNumber) {
+    switch (teamNumber) {
+      case 0:
+        return matchBuilder.teamA;
+      case 1:
+        return matchBuilder.teamB;
+      default:
+        throw Error();
+    }
+  }
+
   Team getTeamForPlayerNumber(int playerNumber) {
     return getTeam(playerNumber % NUM_TEAMS);
   }

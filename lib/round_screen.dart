@@ -64,21 +64,23 @@ class _RoundWidgetState extends State<RoundWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var actions = <Widget>[];
+    if (!round.finished) {
+      actions.add(IconButton(
+        icon: Icon(Icons.add),
+        onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  NewHandScreen(this.matchReference, this.roundReference),
+            )),
+      ));
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("${match.teamA.name} vs ${match.teamB.name}"),
-        actions: <Widget>[
-          // action button
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      NewHandScreen(this.matchReference, this.roundReference),
-                )),
-          ),
-        ],
+        actions: actions,
       ),
       body: _buildBody(context),
     );
@@ -86,10 +88,8 @@ class _RoundWidgetState extends State<RoundWidget> {
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: roundReference
-          .collection("hands")
-          .orderBy("handNumber", descending: true)
-          .snapshots(),
+      stream:
+          roundReference.collection("hands").orderBy("handNumber").snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 

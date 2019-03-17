@@ -240,10 +240,8 @@ class _NewHandScreenState extends State<NewHandScreen> {
               );
             }
             bool biddingTeam = teamNumber == bidSummary.biddingTeam;
-            int points = biddingTeam
-                ? scoring.calcBiddersScore(bidSummary.bid, bidSummary.tricksWon)
-                : scoring.calcNonBiddersScore(
-                    bidSummary.bid, bidSummary.tricksWon);
+            int points = scoring.calcScore(teamNumber == bidSummary.biddingTeam,
+                bidSummary.bid, bidSummary.tricksWon);
             return Expanded(
               child: Text(
                 Formatters.formatPoints(points),
@@ -293,10 +291,22 @@ class _NewHandScreenState extends State<NewHandScreen> {
               ..teamBScore = hand.cumPointsTeamB
               ..lastPlayed = hand.timePlayed
               ..numHands += 1;
+            [0, 1].forEach((teamNumber) {
+              if (scoring.hasWon(
+                  hand.biddingTeam == teamNumber,
+                  hand.getCumPoints(teamNumber),
+                  hand.getCumPoints(1 - teamNumber))) {
+                roundBuilder.winningTeam = teamNumber;
+                roundBuilder.finished = true;
+              }
+            });
             roundReference.setData(roundBuilder.build().toMap(), merge: true);
 
             MatchBuilder matchBuilder = match.toBuilder()
               ..lastPlayed = hand.timePlayed;
+            if (round.finished) {
+              Match.getTeamBuilder(matchBuilder, round.winningTeam).wins++;
+            }
             matchReference.setData(matchBuilder.build().toMap(), merge: true);
 
             Navigator.pop(context);

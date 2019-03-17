@@ -30,7 +30,16 @@ class _$RoundSerializer implements StructuredSerializer<Round> {
       'lastPlayed',
       serializers.serialize(object.lastPlayed,
           specifiedType: const FullType(DateTime)),
+      'finished',
+      serializers.serialize(object.finished,
+          specifiedType: const FullType(bool)),
     ];
+    if (object.winningTeam != null) {
+      result
+        ..add('winningTeam')
+        ..add(serializers.serialize(object.winningTeam,
+            specifiedType: const FullType(int)));
+    }
     if (object.scoringPrefs != null) {
       result
         ..add('scoringPrefs')
@@ -68,6 +77,14 @@ class _$RoundSerializer implements StructuredSerializer<Round> {
           result.lastPlayed = serializers.deserialize(value,
               specifiedType: const FullType(DateTime)) as DateTime;
           break;
+        case 'finished':
+          result.finished = serializers.deserialize(value,
+              specifiedType: const FullType(bool)) as bool;
+          break;
+        case 'winningTeam':
+          result.winningTeam = serializers.deserialize(value,
+              specifiedType: const FullType(int)) as int;
+          break;
         case 'scoringPrefs':
           result.scoringPrefs.replace(serializers.deserialize(value,
               specifiedType: const FullType(ScoringPrefs)) as ScoringPrefs);
@@ -89,6 +106,10 @@ class _$Round extends Round {
   @override
   final DateTime lastPlayed;
   @override
+  final bool finished;
+  @override
+  final int winningTeam;
+  @override
   final ScoringPrefs scoringPrefs;
   ScoringPrefs __scoringPrefsNonNull;
 
@@ -100,6 +121,8 @@ class _$Round extends Round {
       this.teamAScore,
       this.teamBScore,
       this.lastPlayed,
+      this.finished,
+      this.winningTeam,
       this.scoringPrefs})
       : super._() {
     if (numHands == null) {
@@ -113,6 +136,9 @@ class _$Round extends Round {
     }
     if (lastPlayed == null) {
       throw new BuiltValueNullFieldError('Round', 'lastPlayed');
+    }
+    if (finished == null) {
+      throw new BuiltValueNullFieldError('Round', 'finished');
     }
   }
 
@@ -135,6 +161,8 @@ class _$Round extends Round {
         teamAScore == other.teamAScore &&
         teamBScore == other.teamBScore &&
         lastPlayed == other.lastPlayed &&
+        finished == other.finished &&
+        winningTeam == other.winningTeam &&
         scoringPrefs == other.scoringPrefs;
   }
 
@@ -142,9 +170,13 @@ class _$Round extends Round {
   int get hashCode {
     return $jf($jc(
         $jc(
-            $jc($jc($jc(0, numHands.hashCode), teamAScore.hashCode),
-                teamBScore.hashCode),
-            lastPlayed.hashCode),
+            $jc(
+                $jc(
+                    $jc($jc($jc(0, numHands.hashCode), teamAScore.hashCode),
+                        teamBScore.hashCode),
+                    lastPlayed.hashCode),
+                finished.hashCode),
+            winningTeam.hashCode),
         scoringPrefs.hashCode));
   }
 
@@ -155,6 +187,8 @@ class _$Round extends Round {
           ..add('teamAScore', teamAScore)
           ..add('teamBScore', teamBScore)
           ..add('lastPlayed', lastPlayed)
+          ..add('finished', finished)
+          ..add('winningTeam', winningTeam)
           ..add('scoringPrefs', scoringPrefs))
         .toString();
   }
@@ -179,6 +213,14 @@ class RoundBuilder implements Builder<Round, RoundBuilder> {
   DateTime get lastPlayed => _$this._lastPlayed;
   set lastPlayed(DateTime lastPlayed) => _$this._lastPlayed = lastPlayed;
 
+  bool _finished;
+  bool get finished => _$this._finished;
+  set finished(bool finished) => _$this._finished = finished;
+
+  int _winningTeam;
+  int get winningTeam => _$this._winningTeam;
+  set winningTeam(int winningTeam) => _$this._winningTeam = winningTeam;
+
   ScoringPrefsBuilder _scoringPrefs;
   ScoringPrefsBuilder get scoringPrefs =>
       _$this._scoringPrefs ??= new ScoringPrefsBuilder();
@@ -193,6 +235,8 @@ class RoundBuilder implements Builder<Round, RoundBuilder> {
       _teamAScore = _$v.teamAScore;
       _teamBScore = _$v.teamBScore;
       _lastPlayed = _$v.lastPlayed;
+      _finished = _$v.finished;
+      _winningTeam = _$v.winningTeam;
       _scoringPrefs = _$v.scoringPrefs?.toBuilder();
       _$v = null;
     }
@@ -222,6 +266,8 @@ class RoundBuilder implements Builder<Round, RoundBuilder> {
               teamAScore: teamAScore,
               teamBScore: teamBScore,
               lastPlayed: lastPlayed,
+              finished: finished,
+              winningTeam: winningTeam,
               scoringPrefs: _scoringPrefs?.build());
     } catch (_) {
       String _$failedField;

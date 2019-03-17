@@ -26,6 +26,28 @@ abstract class Hand implements Built<Hand, HandBuilder> {
   int get cumPointsTeamB;
   int get tricksWon;
 
+  getPoints(int teamNumber) {
+    switch (teamNumber) {
+      case 0:
+        return pointsTeamA;
+      case 1:
+        return pointsTeamB;
+      default:
+        throw Error();
+    }
+  }
+
+  getCumPoints(int teamNumber) {
+    switch (teamNumber) {
+      case 0:
+        return cumPointsTeamA;
+      case 1:
+        return cumPointsTeamB;
+      default:
+        throw Error();
+    }
+  }
+
   DateTime get timePlayed;
 
   Hand._();

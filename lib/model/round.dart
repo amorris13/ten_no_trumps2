@@ -13,6 +13,11 @@ abstract class Round implements Built<Round, RoundBuilder> {
   int get teamAScore;
   int get teamBScore;
   DateTime get lastPlayed;
+
+  bool get finished;
+  @nullable
+  int get winningTeam;
+
   @nullable
   ScoringPrefs get scoringPrefs;
   @memoized

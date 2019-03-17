@@ -4,6 +4,9 @@ import 'bid.dart';
 import 'scoring_prefs.dart';
 
 class Scoring {
+  static const int WINNING_SCORE = 500;
+  static const int LOSING_SCORE = -500;
+
   static const int POINTS_PER_TRICK_WON_BY_LOSING_TEAM = 10;
 
   static const int BONUS = 250;
@@ -32,11 +35,11 @@ class Scoring {
 
   int calcScore(bool biddingTeam, Bid bid, int tricksWonByBiddingTeam) {
     return biddingTeam
-        ? calcBiddersScore(bid, tricksWonByBiddingTeam)
-        : calcNonBiddersScore(bid, tricksWonByBiddingTeam);
+        ? _calcBiddersScore(bid, tricksWonByBiddingTeam)
+        : _calcNonBiddersScore(bid, tricksWonByBiddingTeam);
   }
 
-  int calcBiddersScore(Bid bid, int tricksWonByBiddingTeam) {
+  int _calcBiddersScore(Bid bid, int tricksWonByBiddingTeam) {
     int bidValue = mSuitPoints[bid.suit] + mTricksPoints[bid.tricks];
     if (bid.isWinningNumberOfTricks(tricksWonByBiddingTeam)) {
       if (scoringPrefs.tenTrickBonus &&
@@ -50,8 +53,8 @@ class Scoring {
     }
   }
 
-  int calcNonBiddersScore(Bid bid, int tricksWonByBiddingTeam) {
-    if (shouldNonBiddersReceivePoints(bid, tricksWonByBiddingTeam)) {
+  int _calcNonBiddersScore(Bid bid, int tricksWonByBiddingTeam) {
+    if (_shouldNonBiddersReceivePoints(bid, tricksWonByBiddingTeam)) {
       if (bid.tricks == Tricks.ZERO) {
         // No points for non bidding team in misere bids.
         return 0;
@@ -64,9 +67,19 @@ class Scoring {
     }
   }
 
-  bool shouldNonBiddersReceivePoints(Bid bid, int tricksWonByBiddingTeam) {
+  bool _shouldNonBiddersReceivePoints(Bid bid, int tricksWonByBiddingTeam) {
     return scoringPrefs.nonBiddingPoints == NonBiddingPointsEnum.always ||
         (scoringPrefs.nonBiddingPoints == NonBiddingPointsEnum.onlyWithLoss &&
             !bid.isWinningNumberOfTricks(tricksWonByBiddingTeam));
+  }
+
+  bool hasWon(bool biddingTeam, int score, int otherTeamScore) {
+    if (score >= WINNING_SCORE && biddingTeam) {
+      return true;
+    }
+    if (otherTeamScore <= LOSING_SCORE) {
+      return true;
+    }
+    return false;
   }
 }

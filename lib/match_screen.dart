@@ -37,6 +37,7 @@ class MatchScreen extends StatelessWidget {
                 ..teamAScore = 0
                 ..teamBScore = 0
                 ..numHands = 0
+                ..finished = false
                 ..lastPlayed = DateTime.now());
 
               DocumentReference roundReference =
@@ -182,6 +183,11 @@ class MatchScreen extends StatelessWidget {
       key: Key(round.toString()),
       onDismissed: (direction) {
         roundReference.delete();
+        MatchBuilder matchBuilder = match.toBuilder();
+        if (round.finished) {
+          Match.getTeamBuilder(matchBuilder, round.winningTeam).wins--;
+        }
+        matchReference.setData(matchBuilder.build().toMap(), merge: true);
 
         // Show a snackbar! This snackbar could also contain "Undo" actions.
         Scaffold.of(context).showSnackBar(
@@ -189,9 +195,18 @@ class MatchScreen extends StatelessWidget {
             content: Text("Round Deleted"),
             action: SnackBarAction(
               label: 'Undo',
-              onPressed: () => Firestore.instance
-                  .document(roundReference.path)
-                  .setData(roundSnapshot.data),
+              onPressed: () {
+                MatchBuilder matchBuilder = match.toBuilder();
+                if (round.finished) {
+                  Match.getTeamBuilder(matchBuilder, round.winningTeam).wins++;
+                }
+                matchReference.setData(matchBuilder.build().toMap(),
+                    merge: true);
+
+                Firestore.instance
+                    .document(roundReference.path)
+                    .setData(roundSnapshot.data);
+              },
             ),
           ),
         );
