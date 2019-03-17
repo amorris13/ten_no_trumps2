@@ -49,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       stream: Firestore.instance
           .collection('matches')
           .where("users", arrayContains: user.uid)
+          .orderBy("lastPlayed", descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();

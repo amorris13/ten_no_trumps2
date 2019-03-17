@@ -86,7 +86,10 @@ class _RoundWidgetState extends State<RoundWidget> {
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: roundReference.collection("hands").snapshots(),
+      stream: roundReference
+          .collection("hands")
+          .orderBy("handNumber", descending: true)
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
