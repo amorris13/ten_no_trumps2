@@ -30,6 +30,12 @@ class Scoring {
 
   Scoring(this.scoringPrefs);
 
+  int calcScore(bool biddingTeam, Bid bid, int tricksWonByBiddingTeam) {
+    return biddingTeam
+        ? calcBiddersScore(bid, tricksWonByBiddingTeam)
+        : calcNonBiddersScore(bid, tricksWonByBiddingTeam);
+  }
+
   int calcBiddersScore(Bid bid, int tricksWonByBiddingTeam) {
     int bidValue = mSuitPoints[bid.suit] + mTricksPoints[bid.tricks];
     if (bid.isWinningNumberOfTricks(tricksWonByBiddingTeam)) {

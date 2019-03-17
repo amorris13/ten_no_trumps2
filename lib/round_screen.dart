@@ -102,14 +102,14 @@ class _RoundWidgetState extends State<RoundWidget> {
             height: 0.0,
           ),
       itemCount: snapshot.length,
-      itemBuilder: (context, index) => _buildListItem(
-          context, snapshot[index], index == snapshot.length - 1),
+      itemBuilder: (context, index) => _buildListItem(context, snapshot[index]),
     );
   }
 
-  Widget _buildListItem(
-      BuildContext context, DocumentSnapshot handSnapshot, bool isLast) {
+  Widget _buildListItem(BuildContext context, DocumentSnapshot handSnapshot) {
     final hand = Hand.fromMap(handSnapshot.data);
+
+    bool isLast = hand.handNumber == round.numHands - 1;
 
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
     int winsFlex = 1;

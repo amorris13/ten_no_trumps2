@@ -36,6 +36,7 @@ class MatchScreen extends StatelessWidget {
               Round round = new Round((b) => b
                 ..teamAScore = 0
                 ..teamBScore = 0
+                ..numHands = 0
                 ..lastPlayed = DateTime.now());
 
               DocumentReference roundReference =

@@ -266,18 +266,40 @@ class _NewHandScreenState extends State<NewHandScreen> {
           // the form is invalid.
           if (_formKey.currentState.validate()) {
             _formKey.currentState.save();
-            // matchBuilder.lastPlayed = DateTime.now();
-            // matchBuilder.teamA.wins = 0;
-            // matchBuilder.teamB.wins = 0;
 
-            // DocumentReference matchReference =
-            //     Firestore.instance.collection("matches").document();
-            // matchReference.setData(matchBuilder.build().toMap());
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(
-            //       builder: (context) => MatchScreen(matchReference)),
-            // );
+            handBuilder.pointsTeamA = scoring.calcScore(
+                handBuilder.biddingTeam == 0,
+                bidSubject.value,
+                tricksWonSubject.value);
+            handBuilder.cumPointsTeamA =
+                round.teamAScore + handBuilder.pointsTeamA;
+            handBuilder.pointsTeamB = scoring.calcScore(
+                handBuilder.biddingTeam == 1,
+                bidSubject.value,
+                tricksWonSubject.value);
+            handBuilder.cumPointsTeamB =
+                round.teamBScore + handBuilder.pointsTeamB;
+            handBuilder.timePlayed = DateTime.now();
+            handBuilder.handNumber = round.numHands;
+
+            Hand hand = handBuilder.build();
+
+            DocumentReference handReference =
+                roundReference.collection("hands").document();
+            handReference.setData(hand.toMap());
+
+            RoundBuilder roundBuilder = round.toBuilder()
+              ..teamAScore = hand.cumPointsTeamA
+              ..teamBScore = hand.cumPointsTeamB
+              ..lastPlayed = hand.timePlayed
+              ..numHands += 1;
+            roundReference.setData(roundBuilder.build().toMap(), merge: true);
+
+            MatchBuilder matchBuilder = match.toBuilder()
+              ..lastPlayed = hand.timePlayed;
+            matchReference.setData(matchBuilder.build().toMap(), merge: true);
+
+            Navigator.pop(context);
           }
         },
         child: Text('OK'),

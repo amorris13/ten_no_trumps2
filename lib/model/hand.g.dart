@@ -18,6 +18,9 @@ class _$HandSerializer implements StructuredSerializer<Hand> {
   Iterable serialize(Serializers serializers, Hand object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object>[
+      'handNumber',
+      serializers.serialize(object.handNumber,
+          specifiedType: const FullType(int)),
       'bid',
       serializers.serialize(object.bid, specifiedType: const FullType(String)),
       'biddingTeam',
@@ -38,6 +41,9 @@ class _$HandSerializer implements StructuredSerializer<Hand> {
       'tricksWon',
       serializers.serialize(object.tricksWon,
           specifiedType: const FullType(int)),
+      'timePlayed',
+      serializers.serialize(object.timePlayed,
+          specifiedType: const FullType(DateTime)),
     ];
     if (object.biddingPlayer != null) {
       result
@@ -66,6 +72,10 @@ class _$HandSerializer implements StructuredSerializer<Hand> {
       iterator.moveNext();
       final dynamic value = iterator.current;
       switch (key) {
+        case 'handNumber':
+          result.handNumber = serializers.deserialize(value,
+              specifiedType: const FullType(int)) as int;
+          break;
         case 'bid':
           result.bid = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String;
@@ -102,6 +112,10 @@ class _$HandSerializer implements StructuredSerializer<Hand> {
           result.tricksWon = serializers.deserialize(value,
               specifiedType: const FullType(int)) as int;
           break;
+        case 'timePlayed':
+          result.timePlayed = serializers.deserialize(value,
+              specifiedType: const FullType(DateTime)) as DateTime;
+          break;
       }
     }
 
@@ -110,6 +124,8 @@ class _$HandSerializer implements StructuredSerializer<Hand> {
 }
 
 class _$Hand extends Hand {
+  @override
+  final int handNumber;
   @override
   final String bid;
   @override
@@ -128,13 +144,16 @@ class _$Hand extends Hand {
   final int cumPointsTeamB;
   @override
   final int tricksWon;
+  @override
+  final DateTime timePlayed;
   Bid __actualBid;
 
   factory _$Hand([void updates(HandBuilder b)]) =>
       (new HandBuilder()..update(updates)).build();
 
   _$Hand._(
-      {this.bid,
+      {this.handNumber,
+      this.bid,
       this.biddingPlayer,
       this.biddingTeam,
       this.dealer,
@@ -142,8 +161,12 @@ class _$Hand extends Hand {
       this.cumPointsTeamA,
       this.pointsTeamB,
       this.cumPointsTeamB,
-      this.tricksWon})
+      this.tricksWon,
+      this.timePlayed})
       : super._() {
+    if (handNumber == null) {
+      throw new BuiltValueNullFieldError('Hand', 'handNumber');
+    }
     if (bid == null) {
       throw new BuiltValueNullFieldError('Hand', 'bid');
     }
@@ -165,6 +188,9 @@ class _$Hand extends Hand {
     if (tricksWon == null) {
       throw new BuiltValueNullFieldError('Hand', 'tricksWon');
     }
+    if (timePlayed == null) {
+      throw new BuiltValueNullFieldError('Hand', 'timePlayed');
+    }
   }
 
   @override
@@ -181,6 +207,7 @@ class _$Hand extends Hand {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Hand &&
+        handNumber == other.handNumber &&
         bid == other.bid &&
         biddingPlayer == other.biddingPlayer &&
         biddingTeam == other.biddingTeam &&
@@ -189,7 +216,8 @@ class _$Hand extends Hand {
         cumPointsTeamA == other.cumPointsTeamA &&
         pointsTeamB == other.pointsTeamB &&
         cumPointsTeamB == other.cumPointsTeamB &&
-        tricksWon == other.tricksWon;
+        tricksWon == other.tricksWon &&
+        timePlayed == other.timePlayed;
   }
 
   @override
@@ -201,20 +229,25 @@ class _$Hand extends Hand {
                     $jc(
                         $jc(
                             $jc(
-                                $jc($jc(0, bid.hashCode),
-                                    biddingPlayer.hashCode),
-                                biddingTeam.hashCode),
-                            dealer.hashCode),
-                        pointsTeamA.hashCode),
-                    cumPointsTeamA.hashCode),
-                pointsTeamB.hashCode),
-            cumPointsTeamB.hashCode),
-        tricksWon.hashCode));
+                                $jc(
+                                    $jc(
+                                        $jc($jc(0, handNumber.hashCode),
+                                            bid.hashCode),
+                                        biddingPlayer.hashCode),
+                                    biddingTeam.hashCode),
+                                dealer.hashCode),
+                            pointsTeamA.hashCode),
+                        cumPointsTeamA.hashCode),
+                    pointsTeamB.hashCode),
+                cumPointsTeamB.hashCode),
+            tricksWon.hashCode),
+        timePlayed.hashCode));
   }
 
   @override
   String toString() {
     return (newBuiltValueToStringHelper('Hand')
+          ..add('handNumber', handNumber)
           ..add('bid', bid)
           ..add('biddingPlayer', biddingPlayer)
           ..add('biddingTeam', biddingTeam)
@@ -223,13 +256,18 @@ class _$Hand extends Hand {
           ..add('cumPointsTeamA', cumPointsTeamA)
           ..add('pointsTeamB', pointsTeamB)
           ..add('cumPointsTeamB', cumPointsTeamB)
-          ..add('tricksWon', tricksWon))
+          ..add('tricksWon', tricksWon)
+          ..add('timePlayed', timePlayed))
         .toString();
   }
 }
 
 class HandBuilder implements Builder<Hand, HandBuilder> {
   _$Hand _$v;
+
+  int _handNumber;
+  int get handNumber => _$this._handNumber;
+  set handNumber(int handNumber) => _$this._handNumber = handNumber;
 
   String _bid;
   String get bid => _$this._bid;
@@ -269,10 +307,15 @@ class HandBuilder implements Builder<Hand, HandBuilder> {
   int get tricksWon => _$this._tricksWon;
   set tricksWon(int tricksWon) => _$this._tricksWon = tricksWon;
 
+  DateTime _timePlayed;
+  DateTime get timePlayed => _$this._timePlayed;
+  set timePlayed(DateTime timePlayed) => _$this._timePlayed = timePlayed;
+
   HandBuilder();
 
   HandBuilder get _$this {
     if (_$v != null) {
+      _handNumber = _$v.handNumber;
       _bid = _$v.bid;
       _biddingPlayer = _$v.biddingPlayer;
       _biddingTeam = _$v.biddingTeam;
@@ -282,6 +325,7 @@ class HandBuilder implements Builder<Hand, HandBuilder> {
       _pointsTeamB = _$v.pointsTeamB;
       _cumPointsTeamB = _$v.cumPointsTeamB;
       _tricksWon = _$v.tricksWon;
+      _timePlayed = _$v.timePlayed;
       _$v = null;
     }
     return this;
@@ -304,6 +348,7 @@ class HandBuilder implements Builder<Hand, HandBuilder> {
   _$Hand build() {
     final _$result = _$v ??
         new _$Hand._(
+            handNumber: handNumber,
             bid: bid,
             biddingPlayer: biddingPlayer,
             biddingTeam: biddingTeam,
@@ -312,7 +357,8 @@ class HandBuilder implements Builder<Hand, HandBuilder> {
             cumPointsTeamA: cumPointsTeamA,
             pointsTeamB: pointsTeamB,
             cumPointsTeamB: cumPointsTeamB,
-            tricksWon: tricksWon);
+            tricksWon: tricksWon,
+            timePlayed: timePlayed);
     replace(_$result);
     return _$result;
   }

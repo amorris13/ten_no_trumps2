@@ -9,6 +9,8 @@ import 'serializers.dart';
 part 'hand.g.dart';
 
 abstract class Hand implements Built<Hand, HandBuilder> {
+  int get handNumber;
+
   String get bid;
   @memoized
   Bid get actualBid => Bid.bidsMap[bid];
@@ -23,6 +25,8 @@ abstract class Hand implements Built<Hand, HandBuilder> {
   int get pointsTeamB;
   int get cumPointsTeamB;
   int get tricksWon;
+
+  DateTime get timePlayed;
 
   Hand._();
 

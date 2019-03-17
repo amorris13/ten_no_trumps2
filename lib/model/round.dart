@@ -9,6 +9,7 @@ import 'serializers.dart';
 part 'round.g.dart';
 
 abstract class Round implements Built<Round, RoundBuilder> {
+  int get numHands;
   int get teamAScore;
   int get teamBScore;
   DateTime get lastPlayed;
