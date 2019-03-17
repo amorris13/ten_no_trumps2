@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'formatters.dart';
-import 'model/bid.dart';
 import 'model/hand.dart';
 import 'model/match.dart';
 import 'model/round.dart';
@@ -123,14 +122,7 @@ class _RoundWidgetState extends State<RoundWidget> {
         children: <Widget>[
           Expanded(
             flex: winsFlex,
-            child: _buildTeamDetails(
-                hand.biddingTeam == 0,
-                hand.tricksWon,
-                hand.pointsTeamA,
-                hand.cumPointsTeamA,
-                hand.actualBid,
-                isLast,
-                false),
+            child: _buildTeamDetailsSimple(hand, 0, isLast, false),
           ),
           Expanded(
             flex: 0,
@@ -145,37 +137,31 @@ class _RoundWidgetState extends State<RoundWidget> {
           ),
           Expanded(
             flex: winsFlex,
-            child: _buildTeamDetails(
-                hand.biddingTeam == 1,
-                hand.tricksWon,
-                hand.pointsTeamB,
-                hand.cumPointsTeamB,
-                hand.actualBid,
-                isLast,
-                true),
+            child: _buildTeamDetailsSimple(hand, 1, isLast, true),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTeamDetails(bool biddingTeam, int tricksWonByBiddingTeam,
-      int points, int cumPoints, Bid bid, bool isLast, bool reversed) {
+  Widget _buildTeamDetailsSimple(
+      Hand hand, int teamNumber, bool isLast, bool reversed) {
+    bool biddingTeam = hand.biddingTeam == teamNumber;
+
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
-    int tricksWonByTeam =
-        biddingTeam ? tricksWonByBiddingTeam : 10 - tricksWonByBiddingTeam;
+    int tricksWonByTeam = biddingTeam ? hand.tricksWon : 10 - hand.tricksWon;
 
     var children = <Widget>[
       Expanded(
         flex: 1,
         child: Text(
-          biddingTeam ? bid.getSymbol() : "",
+          biddingTeam ? hand.actualBid.getSymbol() : "",
           textAlign: reversed ? TextAlign.right : TextAlign.left,
           style: mainStyle,
         ),
       ),
       Expanded(
-        flex: 3,
+        flex: 2,
         child: Column(
           children: <Widget>[
             Text(
@@ -184,9 +170,10 @@ class _RoundWidgetState extends State<RoundWidget> {
               textScaleFactor: 0.85,
             ),
             Text(
-              Formatters.formatPoints(points),
+              Formatters.formatPoints(hand.getPoints(teamNumber)),
               style: mainStyle.apply(
-                color: Formatters.getColor(points, biddingTeam),
+                color: Formatters.getColor(
+                    hand.getPoints(teamNumber), biddingTeam),
               ),
               textScaleFactor: 0.85,
             ),
@@ -196,7 +183,7 @@ class _RoundWidgetState extends State<RoundWidget> {
       Expanded(
         flex: 1,
         child: Text(
-          cumPoints.toString(),
+          hand.getCumPoints(teamNumber).toString(),
           textAlign: reversed ? TextAlign.left : TextAlign.right,
           style: mainStyle.apply(
               decoration:
