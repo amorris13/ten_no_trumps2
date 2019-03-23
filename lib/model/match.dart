@@ -1,5 +1,6 @@
 library match;
 
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -15,6 +16,7 @@ abstract class Match implements Built<Match, MatchBuilder> {
   // Team number 1
   Team get teamB;
   DateTime get lastPlayed;
+  BuiltList<String> get users;
 
   Match._();
 

@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'match_screen.dart';
 import 'model/match.dart';
 
 class NewMatchScreen extends StatefulWidget {
-  NewMatchScreen();
+  final FirebaseUser currentUser;
+
+  NewMatchScreen(this.currentUser);
 
   @override
   _NewMatchScreenState createState() {
@@ -16,7 +19,7 @@ class NewMatchScreen extends StatefulWidget {
 class _NewMatchScreenState extends State<NewMatchScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  MatchBuilder matchBuilder = MatchBuilder();
+  final MatchBuilder matchBuilder = MatchBuilder();
 
   _NewMatchScreenState();
 
@@ -84,6 +87,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                     matchBuilder.lastPlayed = DateTime.now();
                     matchBuilder.teamA.wins = 0;
                     matchBuilder.teamB.wins = 0;
+                    matchBuilder.users.add(this.widget.currentUser.uid);
 
                     DocumentReference matchReference =
                         Firestore.instance.collection("matches").document();

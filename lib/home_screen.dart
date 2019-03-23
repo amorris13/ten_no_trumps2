@@ -41,7 +41,7 @@ class HomeWidget extends StatelessWidget {
             icon: Icon(Icons.add),
             onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NewMatchScreen()),
+                  MaterialPageRoute(builder: (context) => NewMatchScreen(user)),
                 ),
           ),
           PopupMenuButton<Function>(

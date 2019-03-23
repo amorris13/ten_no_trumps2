@@ -26,6 +26,10 @@ class _$MatchSerializer implements StructuredSerializer<Match> {
       'lastPlayed',
       serializers.serialize(object.lastPlayed,
           specifiedType: const FullType(DateTime)),
+      'users',
+      serializers.serialize(object.users,
+          specifiedType:
+              const FullType(BuiltList, const [const FullType(String)])),
     ];
 
     return result;
@@ -53,6 +57,12 @@ class _$MatchSerializer implements StructuredSerializer<Match> {
         case 'lastPlayed':
           result.lastPlayed = serializers.deserialize(value,
               specifiedType: const FullType(DateTime)) as DateTime;
+          break;
+        case 'users':
+          result.users.replace(serializers.deserialize(value,
+                  specifiedType:
+                      const FullType(BuiltList, const [const FullType(String)]))
+              as BuiltList);
           break;
       }
     }
@@ -133,11 +143,13 @@ class _$Match extends Match {
   final Team teamB;
   @override
   final DateTime lastPlayed;
+  @override
+  final BuiltList<String> users;
 
   factory _$Match([void updates(MatchBuilder b)]) =>
       (new MatchBuilder()..update(updates)).build();
 
-  _$Match._({this.teamA, this.teamB, this.lastPlayed}) : super._() {
+  _$Match._({this.teamA, this.teamB, this.lastPlayed, this.users}) : super._() {
     if (teamA == null) {
       throw new BuiltValueNullFieldError('Match', 'teamA');
     }
@@ -146,6 +158,9 @@ class _$Match extends Match {
     }
     if (lastPlayed == null) {
       throw new BuiltValueNullFieldError('Match', 'lastPlayed');
+    }
+    if (users == null) {
+      throw new BuiltValueNullFieldError('Match', 'users');
     }
   }
 
@@ -162,13 +177,15 @@ class _$Match extends Match {
     return other is Match &&
         teamA == other.teamA &&
         teamB == other.teamB &&
-        lastPlayed == other.lastPlayed;
+        lastPlayed == other.lastPlayed &&
+        users == other.users;
   }
 
   @override
   int get hashCode {
-    return $jf(
-        $jc($jc($jc(0, teamA.hashCode), teamB.hashCode), lastPlayed.hashCode));
+    return $jf($jc(
+        $jc($jc($jc(0, teamA.hashCode), teamB.hashCode), lastPlayed.hashCode),
+        users.hashCode));
   }
 
   @override
@@ -176,7 +193,8 @@ class _$Match extends Match {
     return (newBuiltValueToStringHelper('Match')
           ..add('teamA', teamA)
           ..add('teamB', teamB)
-          ..add('lastPlayed', lastPlayed))
+          ..add('lastPlayed', lastPlayed)
+          ..add('users', users))
         .toString();
   }
 }
@@ -196,6 +214,10 @@ class MatchBuilder implements Builder<Match, MatchBuilder> {
   DateTime get lastPlayed => _$this._lastPlayed;
   set lastPlayed(DateTime lastPlayed) => _$this._lastPlayed = lastPlayed;
 
+  ListBuilder<String> _users;
+  ListBuilder<String> get users => _$this._users ??= new ListBuilder<String>();
+  set users(ListBuilder<String> users) => _$this._users = users;
+
   MatchBuilder();
 
   MatchBuilder get _$this {
@@ -203,6 +225,7 @@ class MatchBuilder implements Builder<Match, MatchBuilder> {
       _teamA = _$v.teamA?.toBuilder();
       _teamB = _$v.teamB?.toBuilder();
       _lastPlayed = _$v.lastPlayed;
+      _users = _$v.users?.toBuilder();
       _$v = null;
     }
     return this;
@@ -229,7 +252,8 @@ class MatchBuilder implements Builder<Match, MatchBuilder> {
           new _$Match._(
               teamA: teamA.build(),
               teamB: teamB.build(),
-              lastPlayed: lastPlayed);
+              lastPlayed: lastPlayed,
+              users: users.build());
     } catch (_) {
       String _$failedField;
       try {
@@ -237,6 +261,9 @@ class MatchBuilder implements Builder<Match, MatchBuilder> {
         teamA.build();
         _$failedField = 'teamB';
         teamB.build();
+
+        _$failedField = 'users';
+        users.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             'Match', _$failedField, e.toString());

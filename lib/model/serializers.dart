@@ -22,6 +22,10 @@ part 'serializers.g.dart';
 ])
 final Serializers serializers = (_$serializers.toBuilder()
       ..addPlugin(StandardJsonPlugin())
+      ..addBuilderFactory(
+          // add this builder factory
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
       ..add(DateTimeSerializer()))
     .build();
 
