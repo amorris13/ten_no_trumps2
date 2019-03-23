@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'model/match.dart';
 import 'sign_in_button.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -97,7 +99,16 @@ class LoginScreen extends StatelessWidget {
       return user;
     } catch (e) {
       final FirebaseUser user = await _auth.signInWithCredential(credential);
-      // TODO: reconcile existing user with this user.
+      // Reconcile existing user with this user.
+      QuerySnapshot querySnapshot = await Firestore.instance
+          .collection('matches')
+          .where("users", arrayContains: currentUser.uid)
+          .getDocuments();
+      for (DocumentSnapshot document in querySnapshot.documents) {
+        MatchBuilder matchBuilder = Match.fromMap(document.data).toBuilder();
+        matchBuilder.users.add(user.uid);
+        document.reference.setData(matchBuilder.build().toMap(), merge: true);
+      }
       return user;
     }
   }
