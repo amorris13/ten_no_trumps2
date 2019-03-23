@@ -99,7 +99,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                     );
                   }
                 },
-                child: Text('Create Team'),
+                child: Text('Create Match'),
               ),
             ),
           ],
