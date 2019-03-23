@@ -32,15 +32,14 @@ class LoginScreen extends StatelessWidget {
 
     var signInButtons = <Widget>[];
     if (currentUser == null) {
-      signInButtons.add(RaisedButton(
-        onPressed: () {
-          _auth
-              .signInAnonymously()
-              .then(navigateToHomeScreen)
-              .catchError((e) => print(e));
-        },
-        child: Text("Sign in Anonymously"),
-      ));
+      signInButtons.add(signInButton(
+          context, Colors.grey[300], "Continue without signing in", null,
+          onPressed: () {
+        _auth
+            .signInAnonymously()
+            .then(navigateToHomeScreen)
+            .catchError((e) => print(e));
+      }));
     }
 
     if (currentUser != null &&
@@ -48,24 +47,26 @@ class LoginScreen extends StatelessWidget {
             .where((userInfo) =>
                 userInfo.providerId == GoogleAuthProvider.providerId)
             .isNotEmpty) {
-      signInButtons.add(RaisedButton(
+      signInButtons.add(googleButton(
+        context,
+        "Already signed in with Google",
         onPressed: null,
-        child: Text("Already Signed In With Google"),
       ));
     } else {
-      signInButtons.add(RaisedButton(
+      signInButtons.add(googleButton(
+        context,
+        "Sign in with Google",
         onPressed: () {
           _handleGoogleSignIn(currentUser)
               .then(navigateToHomeScreen)
               .catchError((e) => print(e));
         },
-        child: Text("Sign in with Google"),
       ));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login Page"),
+        title: Text("Login"),
       ),
       body: Center(
         child: ConstrainedBox(
@@ -77,6 +78,33 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget googleButton(BuildContext context, String label,
+      {VoidCallback onPressed}) {
+    return signInButton(
+        context, Colors.white, label, Image.asset('assets/google-logo.png'),
+        onPressed: onPressed);
+  }
+
+  Widget signInButton(
+      BuildContext context, Color color, String label, Image image,
+      {VoidCallback onPressed}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4.0),
+      child: RaisedButton(
+          color: color,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                  padding: const EdgeInsets.fromLTRB(0.0, 16.0, 16.0, 16.0),
+                  child: image),
+              Text(label),
+            ],
+          ),
+          onPressed: onPressed),
     );
   }
 
