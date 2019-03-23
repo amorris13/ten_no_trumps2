@@ -43,10 +43,11 @@ class LoginScreen extends StatelessWidget {
       ));
     }
 
-    if (currentUser.providerData
-        .where(
-            (userInfo) => userInfo.providerId == GoogleAuthProvider.providerId)
-        .isNotEmpty) {
+    if (currentUser != null &&
+        currentUser.providerData
+            .where((userInfo) =>
+                userInfo.providerId == GoogleAuthProvider.providerId)
+            .isNotEmpty) {
       signInButtons.add(RaisedButton(
         onPressed: null,
         child: Text("Already Signed In With Google"),
