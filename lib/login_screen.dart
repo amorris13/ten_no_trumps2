@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rxdart/rxdart.dart';
+
+import 'sign_in_button.dart';
 
 class LoginScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -9,8 +14,12 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: new StreamBuilder<FirebaseUser>(
-        stream: _auth.onAuthStateChanged,
+      body: new StreamBuilder<SignInState>(
+        stream: Observable.combineLatest2(
+            Observable(_auth.onAuthStateChanged).startWith(null),
+            Observable(_googleSignIn.onCurrentUserChanged).startWith(null),
+            (firebaseUser, googleSignInAccount) =>
+                SignInState(firebaseUser, googleSignInAccount)),
         builder: (context, snapshot) {
           return buildWidget(context, snapshot.data);
         },
@@ -18,14 +27,19 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget buildWidget(BuildContext context, FirebaseUser currentUser) {
+  Widget buildWidget(BuildContext context, SignInState signInState) {
+    FirebaseUser currentUser = signInState?.firebaseUser;
+
     var signInButtons = <Widget>[];
     if (currentUser == null) {
-      signInButtons.add(signInButton(
-          context, Colors.grey[300], "Continue without signing in", null,
-          onPressed: () {
-        _auth.signInAnonymously().catchError((e) => print(e));
-      }));
+      signInButtons.add(SignInButton(
+        Colors.grey[300],
+        "Continue without signing in",
+        null,
+        () {
+          return _auth.signInAnonymously().catchError((e) => print(e));
+        },
+      ));
     }
 
     if (currentUser != null &&
@@ -34,23 +48,21 @@ class LoginScreen extends StatelessWidget {
                 userInfo.providerId == GoogleAuthProvider.providerId)
             .isNotEmpty) {
       signInButtons.add(googleButton(
-        context,
         "Signed in with Google",
         onPressed: null,
       ));
     } else {
       signInButtons.add(googleButton(
-        context,
         "Sign in with Google",
         onPressed: () {
-          _handleGoogleSignIn(currentUser).catchError((e) => print(e));
+          return _handleGoogleSignIn(currentUser).catchError((e) => print(e));
         },
       ));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: Text("Sign In"),
       ),
       body: Center(
         child: ConstrainedBox(
@@ -65,31 +77,9 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget googleButton(BuildContext context, String label,
-      {VoidCallback onPressed}) {
-    return signInButton(
-        context, Colors.white, label, Image.asset('assets/google-logo.png'),
-        onPressed: onPressed);
-  }
-
-  Widget signInButton(
-      BuildContext context, Color color, String label, Image image,
-      {VoidCallback onPressed}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.0),
-      child: RaisedButton(
-          color: color,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                  padding: const EdgeInsets.fromLTRB(0.0, 16.0, 16.0, 16.0),
-                  child: image),
-              Text(label),
-            ],
-          ),
-          onPressed: onPressed),
-    );
+  SignInButton googleButton(String label, {VoidCallback onPressed}) {
+    return SignInButton(
+        Colors.white, label, Image.asset('assets/google-logo.png'), onPressed);
   }
 
   Future<FirebaseUser> _handleGoogleSignIn(FirebaseUser currentUser) async {
@@ -111,4 +101,11 @@ class LoginScreen extends StatelessWidget {
       return user;
     }
   }
+}
+
+class SignInState {
+  final FirebaseUser firebaseUser;
+  final GoogleSignInAccount googleSignInAccount;
+
+  SignInState(this.firebaseUser, this.googleSignInAccount);
 }

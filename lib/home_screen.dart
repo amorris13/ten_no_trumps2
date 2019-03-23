@@ -53,7 +53,7 @@ class HomeWidget extends StatelessWidget {
                           MaterialPageRoute(
                               builder: (context) => LoginScreen()),
                         ),
-                    child: Text('Login'),
+                    child: Text('Sign in'),
                   ),
                 ],
           ),
