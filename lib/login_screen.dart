@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import 'home_screen.dart';
-
 class LoginScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -21,24 +19,12 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget buildWidget(BuildContext context, FirebaseUser currentUser) {
-    var navigateToHomeScreen = (user) {
-      if (user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
-      }
-    };
-
     var signInButtons = <Widget>[];
     if (currentUser == null) {
       signInButtons.add(signInButton(
           context, Colors.grey[300], "Continue without signing in", null,
           onPressed: () {
-        _auth
-            .signInAnonymously()
-            .then(navigateToHomeScreen)
-            .catchError((e) => print(e));
+        _auth.signInAnonymously().catchError((e) => print(e));
       }));
     }
 
@@ -49,7 +35,7 @@ class LoginScreen extends StatelessWidget {
             .isNotEmpty) {
       signInButtons.add(googleButton(
         context,
-        "Already signed in with Google",
+        "Signed in with Google",
         onPressed: null,
       ));
     } else {
@@ -57,9 +43,7 @@ class LoginScreen extends StatelessWidget {
         context,
         "Sign in with Google",
         onPressed: () {
-          _handleGoogleSignIn(currentUser)
-              .then(navigateToHomeScreen)
-              .catchError((e) => print(e));
+          _handleGoogleSignIn(currentUser).catchError((e) => print(e));
         },
       ));
     }
