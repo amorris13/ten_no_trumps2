@@ -58,21 +58,22 @@ class RoundWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var actions = <Widget>[];
 
-    actions.add(IconButton(
-      icon: Icon(Icons.assessment),
-      onPressed: () => showDialog<ScoringPrefs>(
-            context: context,
-            builder: (context) => ScoringPrefsDialog(round.scoringPrefsNonNull),
-          ).then((scoringPrefs) {
-            RoundBuilder roundBuilder = round.toBuilder();
-            roundBuilder.scoringPrefs = scoringPrefs.toBuilder();
-            Round updatedRound = roundBuilder.build();
-
-            roundReference.setData(updatedRound.toMap(), merge: true);
-          }),
-    ));
-
     if (!round.finished) {
+      actions.add(IconButton(
+        icon: Icon(Icons.assessment),
+        onPressed: () => showDialog<ScoringPrefs>(
+              context: context,
+              builder: (context) =>
+                  ScoringPrefsDialog(round.scoringPrefsNonNull),
+            ).then((scoringPrefs) {
+              RoundBuilder roundBuilder = round.toBuilder();
+              roundBuilder.scoringPrefs = scoringPrefs.toBuilder();
+              Round updatedRound = roundBuilder.build();
+
+              roundReference.setData(updatedRound.toMap(), merge: true);
+            }),
+      ));
+
       actions.add(IconButton(
         icon: Icon(Icons.add),
         onPressed: () => Navigator.push(
