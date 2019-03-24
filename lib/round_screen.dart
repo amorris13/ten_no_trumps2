@@ -6,7 +6,9 @@ import 'formatters.dart';
 import 'model/hand.dart';
 import 'model/match.dart';
 import 'model/round.dart';
+import 'model/scoring_prefs.dart';
 import 'new_hand_screen.dart';
+import 'scoring_prefs_dialog.dart';
 
 class RoundScreen extends StatelessWidget {
   final DocumentReference matchReference;
@@ -54,6 +56,21 @@ class RoundWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var actions = <Widget>[];
+
+    actions.add(IconButton(
+      icon: Icon(Icons.assessment),
+      onPressed: () => showDialog<ScoringPrefs>(
+            context: context,
+            builder: (context) => ScoringPrefsDialog(round.scoringPrefsNonNull),
+          ).then((scoringPrefs) {
+            RoundBuilder roundBuilder = round.toBuilder();
+            roundBuilder.scoringPrefs = scoringPrefs.toBuilder();
+            Round updatedRound = roundBuilder.build();
+
+            roundReference.setData(updatedRound.toMap(), merge: true);
+          }),
+    ));
+
     if (!round.finished) {
       actions.add(IconButton(
         icon: Icon(Icons.add),
