@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: '500 Scorer',
       home: HomeScreen(),
       theme: new ThemeData(
-        primarySwatch: Colors.blueGrey,
+        primarySwatch: Colors.indigo,
         typography: Typography(
           platform: defaultTargetPlatform,
           englishLike: Typography.englishLike2018,
