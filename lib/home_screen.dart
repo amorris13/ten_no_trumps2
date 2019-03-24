@@ -91,7 +91,7 @@ class HomeWidget extends StatelessWidget {
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot snapshot) {
-    final match = Match.fromMap(snapshot.data);
+    Match match = Match.fromMap(snapshot.data);
 
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
     int nameFlex = 5;
@@ -102,7 +102,14 @@ class HomeWidget extends StatelessWidget {
           new LeaveBehindWidget(alignment: Alignment.centerRight),
       key: Key(match.toString()),
       onDismissed: (direction) {
-        snapshot.reference.delete();
+        if (match.users.length == 1) {
+          snapshot.reference.delete();
+        } else {
+          MatchBuilder matchBuilder = match.toBuilder();
+          matchBuilder.users.remove(user.uid);
+          Match updatedMatch = matchBuilder.build();
+          snapshot.reference.setData(updatedMatch.toMap());
+        }
 
         Scaffold.of(context).hideCurrentSnackBar();
         Scaffold.of(context).showSnackBar(
