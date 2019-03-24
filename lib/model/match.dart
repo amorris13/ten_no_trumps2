@@ -3,6 +3,7 @@ library match;
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:quiver/strings.dart';
 
 import 'serializers.dart';
 
@@ -104,7 +105,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
   Team._();
 
   bool hasPlayerNames() {
-    return player1 != null && player2 != null;
+    return !isEmpty(player1) && !isEmpty(player2);
   }
 
   List<String> getPlayers() {
