@@ -25,7 +25,7 @@ abstract class User implements Built<User, UserBuilder> {
   }
 
   static User fromMap(Map<String, dynamic> map) {
-    return serializers.deserializeWith(User.serializer, map);
+    return serializers.deserializeWith(User.serializer, map ?? Map());
   }
 
   static Serializer<User> get serializer => _$userSerializer;

@@ -29,7 +29,7 @@ class MatchScreen extends StatelessWidget {
         return _buildScreen(
           context,
           Match.fromMap(snapshot.data.item1.data),
-          User.fromMap(snapshot.data.item2.data ?? Map()),
+          User.fromMap(snapshot.data.item2.data),
         );
       },
     );
@@ -57,8 +57,8 @@ class MatchScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        RoundScreen(matchReference, roundReference)),
+                    builder: (context) => RoundScreen(
+                        userReference, matchReference, roundReference)),
               );
             },
           ),
@@ -230,8 +230,8 @@ class MatchScreen extends StatelessWidget {
         onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      RoundScreen(matchReference, roundReference)),
+                  builder: (context) => RoundScreen(
+                      userReference, matchReference, roundReference)),
             ),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 8.0),

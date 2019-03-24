@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tuple/tuple.dart';
 
 import 'common_widgets.dart';
 import 'formatters.dart';
@@ -8,46 +9,55 @@ import 'model/hand.dart';
 import 'model/match.dart';
 import 'model/round.dart';
 import 'model/scoring_prefs.dart';
+import 'model/user.dart';
 import 'new_hand_screen.dart';
 import 'scoring_prefs_dialog.dart';
 
 class RoundScreen extends StatelessWidget {
   final DocumentReference matchReference;
   final DocumentReference roundReference;
+  final DocumentReference userReference;
 
-  RoundScreen(this.matchReference, this.roundReference);
+  RoundScreen(this.userReference, this.matchReference, this.roundReference);
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Snapshots>(
-      stream: Observable.combineLatest2(
+    return StreamBuilder<
+        Tuple3<DocumentSnapshot, DocumentSnapshot, DocumentSnapshot>>(
+      stream: Observable.combineLatest3(
+          userReference.snapshots(),
           matchReference.snapshots(),
           roundReference.snapshots(),
-          (matchSnapshot, roundSnapshot) =>
-              Snapshots(matchSnapshot, roundSnapshot)),
+          (userSnapshot, matchSnapshot, roundSnapshot) =>
+              Tuple3(userSnapshot, matchSnapshot, roundSnapshot)),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
-        Snapshots snapshots = snapshot.data;
         return RoundWidget.fromSnapshots(
-            snapshots.matchSnapshot, snapshots.roundSnapshot);
+            snapshot.data.item1, snapshot.data.item2, snapshot.data.item3);
       },
     );
   }
 }
 
 class RoundWidget extends StatelessWidget {
+  final DocumentReference userReference;
+  final User user;
+
   final DocumentReference matchReference;
   final Match match;
 
   final DocumentReference roundReference;
   final Round round;
 
-  RoundWidget(this.matchReference, this.match, this.roundReference, this.round);
+  RoundWidget(this.userReference, this.user, this.matchReference, this.match,
+      this.roundReference, this.round);
 
-  static fromSnapshots(
+  static fromSnapshots(DocumentSnapshot userSnapshot,
       DocumentSnapshot matchSnapshot, DocumentSnapshot roundSnapshot) {
     return RoundWidget(
+        userSnapshot.reference,
+        User.fromMap(userSnapshot.data),
         matchSnapshot.reference,
         Match.fromMap(matchSnapshot.data),
         roundSnapshot.reference,
@@ -63,14 +73,19 @@ class RoundWidget extends StatelessWidget {
         icon: Icon(Icons.assessment),
         onPressed: () => showDialog<ScoringPrefs>(
               context: context,
-              builder: (context) =>
+              builder: (dialogContext) =>
                   ScoringPrefsDialog(round.scoringPrefsNonNull),
             ).then((scoringPrefs) {
               RoundBuilder roundBuilder = round.toBuilder();
               roundBuilder.scoringPrefs = scoringPrefs.toBuilder();
               Round updatedRound = roundBuilder.build();
-
               roundReference.setData(updatedRound.toMap(), merge: true);
+
+              // And update the user preferences
+              UserBuilder userBuilder = user.toBuilder();
+              userBuilder.scoringPrefs = scoringPrefs.toBuilder();
+              User updatedUser = userBuilder.build();
+              userReference.setData(updatedUser.toMap(), merge: true);
             }),
       ));
 
@@ -315,11 +330,4 @@ class RoundWidget extends StatelessWidget {
     return Row(
         children: reversed ? children.reversed.toList() : children.toList());
   }
-}
-
-class Snapshots {
-  final DocumentSnapshot matchSnapshot;
-  final DocumentSnapshot roundSnapshot;
-
-  Snapshots(this.matchSnapshot, this.roundSnapshot);
 }
