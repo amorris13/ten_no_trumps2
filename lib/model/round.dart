@@ -22,7 +22,7 @@ abstract class Round implements Built<Round, RoundBuilder> {
   ScoringPrefs get scoringPrefs;
   @memoized
   ScoringPrefs get scoringPrefsNonNull =>
-      scoringPrefs == null ? ScoringPrefs.createDefault() : scoringPrefs;
+      scoringPrefs ?? ScoringPrefs.createDefault();
 
   Round._();
 

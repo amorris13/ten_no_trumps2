@@ -1,30 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:tuple/tuple.dart';
 
 import 'common_widgets.dart';
 import 'model/match.dart';
 import 'model/round.dart';
+import 'model/user.dart';
 import 'round_screen.dart';
 
 class MatchScreen extends StatelessWidget {
   final DocumentReference matchReference;
+  final DocumentReference userReference;
 
-  MatchScreen(this.matchReference);
+  MatchScreen(this.matchReference, this.userReference);
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<DocumentSnapshot>(
-      stream: matchReference.snapshots(),
+    return StreamBuilder<Tuple2>(
+      stream: Observable.combineLatest2(
+          matchReference.snapshots(),
+          userReference.snapshots(),
+          (matchSnapshot, userSnapshot) => Tuple2(matchSnapshot, userSnapshot)),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
-        return _buildScreen(context, Match.fromMap(snapshot.data.data));
+        return _buildScreen(
+          context,
+          Match.fromMap(snapshot.data.item1.data),
+          User.fromMap(snapshot.data.item2.data ?? Map()),
+        );
       },
     );
   }
 
-  Widget _buildScreen(BuildContext context, Match match) {
+  Widget _buildScreen(BuildContext context, Match match, User user) {
     return Scaffold(
       appBar: AppBar(
         title: Text("${match.teamA.name} vs ${match.teamB.name}"),

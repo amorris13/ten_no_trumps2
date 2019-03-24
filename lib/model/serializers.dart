@@ -8,6 +8,7 @@ import 'hand.dart';
 import 'match.dart';
 import 'round.dart';
 import 'scoring_prefs.dart';
+import 'user.dart';
 
 part 'serializers.g.dart';
 
@@ -19,6 +20,7 @@ part 'serializers.g.dart';
   Hand,
   ScoringPrefs,
   NonBiddingPointsEnum,
+  User,
 ])
 final Serializers serializers = (_$serializers.toBuilder()
       ..addPlugin(StandardJsonPlugin())

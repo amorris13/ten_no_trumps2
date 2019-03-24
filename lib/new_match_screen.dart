@@ -95,7 +95,12 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MatchScreen(matchReference)),
+                          builder: (context) => MatchScreen(
+                                matchReference,
+                                Firestore.instance
+                                    .collection('users')
+                                    .document(this.widget.currentUser.uid),
+                              )),
                     );
                   }
                 },

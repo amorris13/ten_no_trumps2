@@ -13,6 +13,7 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(Round.serializer)
       ..add(ScoringPrefs.serializer)
       ..add(Team.serializer)
+      ..add(User.serializer)
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
           () => new ListBuilder<String>()))

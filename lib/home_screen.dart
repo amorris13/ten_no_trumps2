@@ -8,6 +8,7 @@ import 'login_screen.dart';
 import 'match_screen.dart';
 import 'model/match.dart';
 import 'new_match_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen();
@@ -51,9 +52,9 @@ class HomeWidget extends StatelessWidget {
                     value: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => LoginScreen()),
+                              builder: (context) => SettingsScreen()),
                         ),
-                    child: Text('Sign in'),
+                    child: Text('Settings'),
                   ),
                 ],
           ),
@@ -120,7 +121,12 @@ class HomeWidget extends StatelessWidget {
         onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => MatchScreen(snapshot.reference)),
+                  builder: (context) => MatchScreen(
+                        snapshot.reference,
+                        Firestore.instance
+                            .collection('users')
+                            .document(user.uid),
+                      )),
             ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),

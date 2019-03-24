@@ -48,4 +48,17 @@ class NonBiddingPointsEnum extends EnumClass {
 
   static BuiltSet<NonBiddingPointsEnum> get values => _$values;
   static NonBiddingPointsEnum valueOf(String name) => _$valueOf(name);
+
+  static String getText(NonBiddingPointsEnum value) {
+    switch (value) {
+      case always:
+        return "Always";
+      case never:
+        return "Never";
+      case onlyWithLoss:
+        return "Only if loss";
+      default:
+        throw Error();
+    }
+  }
 }
