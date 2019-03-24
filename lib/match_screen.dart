@@ -200,7 +200,7 @@ class MatchScreen extends StatelessWidget {
         }
         matchReference.setData(matchBuilder.build().toMap(), merge: true);
 
-        // Show a snackbar! This snackbar could also contain "Undo" actions.
+        Scaffold.of(context).hideCurrentSnackBar();
         Scaffold.of(context).showSnackBar(
           SnackBar(
             content: Text("Round Deleted"),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'common_widgets.dart';
 import 'formatters.dart';
 import 'model/hand.dart';
 import 'model/match.dart';
@@ -156,38 +157,84 @@ class RoundWidget extends StatelessWidget {
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot handSnapshot) {
-    final hand = Hand.fromMap(handSnapshot.data);
+    DocumentReference handReference = handSnapshot.reference;
+    Hand hand = Hand.fromMap(handSnapshot.data);
 
     bool isLast = hand.handNumber == round.numHands - 1;
 
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
     int winsFlex = 1;
 
-    var rows = <Widget>[
-      Row(
-        children: <Widget>[
-          Expanded(
-            flex: winsFlex,
-            child: _buildTeamDetails(context, hand, 0, isLast, false),
-          ),
-          Expanded(
-            flex: 0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Text(
-                ":",
-                textAlign: TextAlign.center,
-                style: mainStyle,
-              ),
+    Widget handDetails = Row(
+      children: <Widget>[
+        Expanded(
+          flex: winsFlex,
+          child: _buildTeamDetails(context, hand, 0, isLast, false),
+        ),
+        Expanded(
+          flex: 0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: Text(
+              ":",
+              textAlign: TextAlign.center,
+              style: mainStyle,
             ),
           ),
-          Expanded(
-            flex: winsFlex,
-            child: _buildTeamDetails(context, hand, 1, isLast, true),
-          ),
-        ],
-      ),
-    ];
+        ),
+        Expanded(
+          flex: winsFlex,
+          child: _buildTeamDetails(context, hand, 1, isLast, true),
+        ),
+      ],
+    );
+
+    if (isLast && !round.finished) {
+      handDetails = Dismissible(
+          background: new LeaveBehindWidget(alignment: Alignment.centerLeft),
+          secondaryBackground:
+              new LeaveBehindWidget(alignment: Alignment.centerRight),
+          key: Key(hand.toString()),
+          onDismissed: (direction) {
+            handReference.delete();
+            RoundBuilder roundBuilder = round.toBuilder();
+            roundBuilder.teamAScore -= hand.pointsTeamA;
+            roundBuilder.teamBScore -= hand.pointsTeamB;
+            roundBuilder.numHands--;
+
+            roundReference.setData(roundBuilder.build().toMap(), merge: true);
+
+            Scaffold.of(context).hideCurrentSnackBar();
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Hand Deleted"),
+                action: SnackBarAction(
+                  label: 'Undo',
+                  onPressed: () {
+                    roundReference.get().then((round) {
+                      RoundBuilder roundBuilder =
+                          Round.fromMap(round.data).toBuilder();
+
+                      roundBuilder.teamAScore += hand.pointsTeamA;
+                      roundBuilder.teamBScore += hand.pointsTeamB;
+                      roundBuilder.numHands++;
+
+                      roundReference.setData(roundBuilder.build().toMap(),
+                          merge: true);
+                    });
+
+                    Firestore.instance
+                        .document(handReference.path)
+                        .setData(handSnapshot.data);
+                  },
+                ),
+              ),
+            );
+          },
+          child: handDetails);
+    }
+
+    var rows = <Widget>[handDetails];
 
     if (round.finished && isLast) {
       String winningTeam = match.getTeam(round.winningTeam).name;

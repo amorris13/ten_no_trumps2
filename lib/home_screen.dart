@@ -104,7 +104,7 @@ class HomeWidget extends StatelessWidget {
       onDismissed: (direction) {
         snapshot.reference.delete();
 
-        // Show a snackbar! This snackbar could also contain "Undo" actions.
+        Scaffold.of(context).hideCurrentSnackBar();
         Scaffold.of(context).showSnackBar(
           SnackBar(
             content: Text("Match Deleted"),
