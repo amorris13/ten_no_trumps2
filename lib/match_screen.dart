@@ -38,7 +38,7 @@ class MatchScreen extends StatelessWidget {
   Widget _buildScreen(BuildContext context, Match match, User user) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${match.teamA.name} vs ${match.teamB.name}"),
+        title: Text("Match"),
         actions: <Widget>[
           // action button
           IconButton(
@@ -85,10 +85,7 @@ class MatchScreen extends StatelessWidget {
               ),
             ],
           ),
-          Divider(
-            color: Theme.of(context).dividerColor,
-            height: 0.0,
-          ),
+          Divider(height: 0.0),
           Flexible(
             child: StreamBuilder<QuerySnapshot>(
               stream: matchReference

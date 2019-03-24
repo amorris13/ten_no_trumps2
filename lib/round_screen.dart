@@ -25,8 +25,6 @@ class RoundScreen extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
-        print("round screen new snapshot");
-
         Snapshots snapshots = snapshot.data;
         return RoundWidget.fromSnapshots(
             snapshots.matchSnapshot, snapshots.roundSnapshot);
@@ -55,8 +53,6 @@ class RoundWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("round widget building with round $round");
-
     var actions = <Widget>[];
     if (!round.finished) {
       actions.add(IconButton(
@@ -72,7 +68,7 @@ class RoundWidget extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("${match.teamA.name} vs ${match.teamB.name}"),
+        title: Text("Round"),
         actions: actions,
       ),
       body: _buildBody(context),
@@ -80,25 +76,62 @@ class RoundWidget extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream:
-          roundReference.collection("hands").orderBy("handNumber").snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
+    return Column(
+      children: <Widget>[
+        _buildHeader(context, match),
+        Divider(height: 0.0),
+        Flexible(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: roundReference
+                .collection("hands")
+                .orderBy("handNumber")
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return LinearProgressIndicator();
 
-        return _buildList(context, snapshot.data.documents);
-      },
+              return _buildList(context, snapshot.data.documents);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, Match match) {
+    TextStyle mainStyle = Theme.of(context).textTheme.title;
+    return Padding(
+      padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              match.teamA.name,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: mainStyle,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              match.teamB.name,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: mainStyle,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return snapshot.isEmpty
-        ? Center(child: Text("Click + to create a hand"))
+        ? Padding(
+            padding: EdgeInsets.only(top: 16.0),
+            child: Center(child: Text("Click + to create a hand")))
         : ListView.separated(
-            separatorBuilder: (context, index) => Divider(
-                  color: Theme.of(context).dividerColor,
-                  height: 0.0,
-                ),
+            separatorBuilder: (context, index) => Divider(height: 0.0),
             itemCount: snapshot.length,
             itemBuilder: (context, index) =>
                 _buildListItem(context, snapshot[index]),
@@ -118,7 +151,7 @@ class RoundWidget extends StatelessWidget {
         children: <Widget>[
           Expanded(
             flex: winsFlex,
-            child: _buildTeamDetailsSimple(context, hand, 0, isLast, false),
+            child: _buildTeamDetails(context, hand, 0, isLast, false),
           ),
           Expanded(
             flex: 0,
@@ -133,7 +166,7 @@ class RoundWidget extends StatelessWidget {
           ),
           Expanded(
             flex: winsFlex,
-            child: _buildTeamDetailsSimple(context, hand, 1, isLast, true),
+            child: _buildTeamDetails(context, hand, 1, isLast, true),
           ),
         ],
       ),
@@ -153,13 +186,14 @@ class RoundWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: rows,
       ),
     );
   }
 
-  Widget _buildTeamDetailsSimple(BuildContext context, Hand hand,
-      int teamNumber, bool isLast, bool reversed) {
+  Widget _buildTeamDetails(BuildContext context, Hand hand, int teamNumber,
+      bool isLast, bool reversed) {
     bool biddingTeam = hand.biddingTeam == teamNumber;
 
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
@@ -177,6 +211,7 @@ class RoundWidget extends StatelessWidget {
       Expanded(
         flex: 2,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
               "won $tricksWonByTeam",
