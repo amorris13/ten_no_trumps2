@@ -73,38 +73,25 @@ class MatchScreen extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, Match match) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: <Widget>[
-          _buildHeader(context, match),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  "Rounds",
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context).textTheme.subhead,
-                ),
-              ),
-            ],
-          ),
-          Divider(height: 0.0),
-          Flexible(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: matchReference
-                  .collection("rounds")
-                  .orderBy("lastPlayed", descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return LinearProgressIndicator();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        _buildHeader(context, match),
+        Divider(height: 0.0),
+        Flexible(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: matchReference
+                .collection("rounds")
+                .orderBy("lastPlayed", descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return LinearProgressIndicator();
 
-                return _buildList(context, match, snapshot.data.documents);
-              },
-            ),
+              return _buildList(context, match, snapshot.data.documents);
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -113,7 +100,8 @@ class MatchScreen extends StatelessWidget {
     int nameFlex = 5;
     int winsFlex = 1;
     return Padding(
-      padding: EdgeInsets.only(top: 12.0, bottom: 24.0),
+      padding:
+          EdgeInsets.only(top: 12.0, bottom: 24.0, left: 16.0, right: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -238,7 +226,7 @@ class MatchScreen extends StatelessWidget {
                       userReference, matchReference, roundReference)),
             ),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0),
+          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Column(
             children: <Widget>[
               Row(
