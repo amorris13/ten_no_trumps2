@@ -24,7 +24,11 @@ class MatchScreen extends StatelessWidget {
           userReference.snapshots(),
           (matchSnapshot, userSnapshot) => Tuple2(matchSnapshot, userSnapshot)),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
+        if (!snapshot.hasData) {
+          return Scaffold(
+              appBar: AppBar(title: Text("Match")),
+              body: LinearProgressIndicator());
+        }
 
         return _buildScreen(
           context,
