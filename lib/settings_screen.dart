@@ -8,6 +8,8 @@ import 'model/user.dart';
 import 'scoring_prefs_dialog.dart';
 
 class SettingsScreen extends StatelessWidget {
+  static const String routeName = "/settings";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,10 +41,7 @@ class SettingsScreen extends StatelessWidget {
       ListTile(
         leading: Icon(Icons.account_circle),
         title: Text("Accounts"),
-        onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
-            ),
+        onTap: () => Navigator.pushNamed(context, LoginScreen.routeName),
       ),
       ListTile(
         leading: Icon(Icons.assessment),

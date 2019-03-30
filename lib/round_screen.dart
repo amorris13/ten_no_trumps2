@@ -13,12 +13,28 @@ import 'model/user.dart';
 import 'new_hand_screen.dart';
 import 'scoring_prefs_dialog.dart';
 
-class RoundScreen extends StatelessWidget {
+class RoundScreenArguments {
+  final DocumentReference userReference;
   final DocumentReference matchReference;
   final DocumentReference roundReference;
+
+  RoundScreenArguments(
+      this.userReference, this.matchReference, this.roundReference);
+}
+
+class RoundScreen extends StatelessWidget {
+  static const String routeName = "/match/round";
+
   final DocumentReference userReference;
+  final DocumentReference matchReference;
+  final DocumentReference roundReference;
 
   RoundScreen(this.userReference, this.matchReference, this.roundReference);
+
+  RoundScreen.fromArgs(RoundScreenArguments args)
+      : this.userReference = args.userReference,
+        this.matchReference = args.matchReference,
+        this.roundReference = args.roundReference;
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +107,9 @@ class RoundWidget extends StatelessWidget {
 
       actions.add(IconButton(
         icon: Icon(Icons.add),
-        onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  NewHandScreen(this.matchReference, this.roundReference),
-            )),
+        onPressed: () => Navigator.pushNamed(context, NewHandScreen.routeName,
+            arguments: NewHandScreenArguments(
+                this.matchReference, this.roundReference)),
       ));
     }
 

@@ -10,11 +10,24 @@ import 'model/match.dart';
 import 'model/round.dart';
 import 'model/scoring.dart';
 
+class NewHandScreenArguments {
+  final DocumentReference matchReference;
+  final DocumentReference roundReference;
+
+  NewHandScreenArguments(this.matchReference, this.roundReference);
+}
+
 class NewHandScreen extends StatefulWidget {
+  static const String routeName = "/match/round/newHand";
+
   final DocumentReference matchReference;
   final DocumentReference roundReference;
 
   NewHandScreen(this.matchReference, this.roundReference);
+
+  NewHandScreen.fromArgs(NewHandScreenArguments args)
+      : this.matchReference = args.matchReference,
+        this.roundReference = args.roundReference;
 
   @override
   _NewHandScreenState createState() {

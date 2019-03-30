@@ -10,11 +10,24 @@ import 'model/round.dart';
 import 'model/user.dart';
 import 'round_screen.dart';
 
+class MatchScreenArguments {
+  final DocumentReference matchReference;
+  final DocumentReference userReference;
+
+  MatchScreenArguments(this.matchReference, this.userReference);
+}
+
 class MatchScreen extends StatelessWidget {
+  static const String routeName = "/match";
+
   final DocumentReference matchReference;
   final DocumentReference userReference;
 
   MatchScreen(this.matchReference, this.userReference);
+
+  MatchScreen.fromArgs(MatchScreenArguments args)
+      : this.matchReference = args.matchReference,
+        this.userReference = args.userReference;
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +71,11 @@ class MatchScreen extends StatelessWidget {
               DocumentReference roundReference =
                   matchReference.collection("rounds").document();
               roundReference.setData(round.toMap());
-              Navigator.push(
+              Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => RoundScreen(
-                        userReference, matchReference, roundReference)),
+                RoundScreen.routeName,
+                arguments: RoundScreenArguments(
+                    userReference, matchReference, roundReference),
               );
             },
           ),
@@ -219,12 +232,9 @@ class MatchScreen extends StatelessWidget {
         );
       },
       child: InkWell(
-        onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => RoundScreen(
-                      userReference, matchReference, roundReference)),
-            ),
+        onTap: () => Navigator.pushNamed(context, RoundScreen.routeName,
+            arguments: RoundScreenArguments(
+                userReference, matchReference, roundReference)),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Column(

@@ -5,6 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
 
 import 'home_screen.dart';
+import 'login_screen.dart';
+import 'match_screen.dart';
+import 'new_hand_screen.dart';
+import 'new_match_screen.dart';
+import 'round_screen.dart';
+import 'settings_screen.dart';
 
 void main() {
   debugPaintSizeEnabled = false;
@@ -18,7 +24,13 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: '500 Scorer',
-      home: HomeScreen(),
+      initialRoute: HomeScreen.routeName,
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) => screenFromRoute(context, settings),
+        );
+      },
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: analytics),
       ],
@@ -32,5 +44,26 @@ class MyApp extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget screenFromRoute(BuildContext context, RouteSettings settings) {
+    switch (settings.name) {
+      case HomeScreen.routeName:
+        return HomeScreen();
+      case SettingsScreen.routeName:
+        return SettingsScreen();
+      case LoginScreen.routeName:
+        return LoginScreen();
+      case MatchScreen.routeName:
+        return MatchScreen.fromArgs(settings.arguments);
+      case RoundScreen.routeName:
+        return RoundScreen.fromArgs(settings.arguments);
+      case NewMatchScreen.routeName:
+        return NewMatchScreen.fromArgs(settings.arguments);
+      case NewHandScreen.routeName:
+        return NewHandScreen.fromArgs(settings.arguments);
+      default:
+        return null;
+    }
   }
 }

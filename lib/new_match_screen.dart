@@ -5,10 +5,21 @@ import 'package:flutter/material.dart';
 import 'match_screen.dart';
 import 'model/match.dart';
 
+class NewMatchScreenArguments {
+  final FirebaseUser currentUser;
+
+  NewMatchScreenArguments(this.currentUser);
+}
+
 class NewMatchScreen extends StatefulWidget {
+  static const String routeName = "/newMatch";
+
   final FirebaseUser currentUser;
 
   NewMatchScreen(this.currentUser);
+
+  NewMatchScreen.fromArgs(NewMatchScreenArguments args)
+      : this.currentUser = args.currentUser;
 
   @override
   _NewMatchScreenState createState() {
@@ -92,16 +103,13 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                     DocumentReference matchReference =
                         Firestore.instance.collection("matches").document();
                     matchReference.setData(matchBuilder.build().toMap());
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MatchScreen(
-                                matchReference,
-                                Firestore.instance
-                                    .collection('users')
-                                    .document(this.widget.currentUser.uid),
-                              )),
-                    );
+                    DocumentReference userReference = Firestore.instance
+                        .collection('users')
+                        .document(this.widget.currentUser.uid);
+                    Navigator.pushReplacementNamed(
+                        context, MatchScreen.routeName,
+                        arguments: MatchScreenArguments(
+                            matchReference, userReference));
                   }
                 },
                 child: Text('Create Match'),

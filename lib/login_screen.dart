@@ -10,6 +10,8 @@ import 'model/match.dart';
 import 'sign_in_button.dart';
 
 class LoginScreen extends StatelessWidget {
+  static const String routeName = "/login";
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 

@@ -11,6 +11,8 @@ import 'new_match_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  static const String routeName = "/";
+
   HomeScreen();
 
   @override
@@ -26,6 +28,8 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+class HomeScreenArguments {}
+
 class HomeWidget extends StatelessWidget {
   final FirebaseUser user;
 
@@ -40,20 +44,16 @@ class HomeWidget extends StatelessWidget {
           // action button
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NewMatchScreen(user)),
-                ),
+            onPressed: () => Navigator.pushNamed(
+                context, NewMatchScreen.routeName,
+                arguments: NewMatchScreenArguments(user)),
           ),
           PopupMenuButton<Function>(
             onSelected: (function) => function.call(),
             itemBuilder: (BuildContext context) => <PopupMenuItem<Function>>[
                   PopupMenuItem<Function>(
-                    value: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SettingsScreen()),
-                        ),
+                    value: () =>
+                        Navigator.pushNamed(context, SettingsScreen.routeName),
                     child: Text('Settings'),
                   ),
                 ],
@@ -92,7 +92,8 @@ class HomeWidget extends StatelessWidget {
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot snapshot) {
     Match match = Match.fromMap(snapshot.data);
-
+    DocumentReference userReference =
+        Firestore.instance.collection('users').document(user.uid);
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
     int nameFlex = 5;
     int winsFlex = 1;
@@ -125,16 +126,8 @@ class HomeWidget extends StatelessWidget {
         );
       },
       child: InkWell(
-        onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => MatchScreen(
-                        snapshot.reference,
-                        Firestore.instance
-                            .collection('users')
-                            .document(user.uid),
-                      )),
-            ),
+        onTap: () => Navigator.pushNamed(context, MatchScreen.routeName,
+            arguments: MatchScreenArguments(snapshot.reference, userReference)),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
           child: Column(
