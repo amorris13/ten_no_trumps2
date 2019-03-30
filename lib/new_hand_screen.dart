@@ -31,18 +31,14 @@ class NewHandScreen extends StatefulWidget {
 
   @override
   _NewHandScreenState createState() {
-    return _NewHandScreenState(matchReference, roundReference);
+    return _NewHandScreenState();
   }
 }
 
 class _NewHandScreenState extends State<NewHandScreen> {
   final _formKey = GlobalKey<FormState>();
-  final DocumentReference matchReference;
-  final DocumentReference roundReference;
 
   HandBuilder handBuilder = HandBuilder();
-
-  _NewHandScreenState(this.matchReference, this.roundReference);
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +46,8 @@ class _NewHandScreenState extends State<NewHandScreen> {
       appBar: AppBar(title: Text("New Hand")),
       body: StreamBuilder<Snapshots>(
         stream: Observable.combineLatest2(
-            matchReference.snapshots(),
-            roundReference.snapshots(),
+            widget.matchReference.snapshots(),
+            widget.roundReference.snapshots(),
             (matchSnapshot, roundSnapshot) =>
                 Snapshots(matchSnapshot, roundSnapshot)),
         builder: (context, snapshot) {
@@ -294,7 +290,7 @@ class _NewHandScreenState extends State<NewHandScreen> {
             Hand hand = handBuilder.build();
 
             DocumentReference handReference =
-                roundReference.collection("hands").document();
+                widget.roundReference.collection("hands").document();
             handReference.setData(hand.toMap());
 
             RoundBuilder roundBuilder = round.toBuilder()
@@ -312,7 +308,7 @@ class _NewHandScreenState extends State<NewHandScreen> {
               }
             });
             Round updatedRound = roundBuilder.build();
-            roundReference.setData(updatedRound.toMap(), merge: true);
+            widget.roundReference.setData(updatedRound.toMap(), merge: true);
 
             MatchBuilder matchBuilder = match.toBuilder()
               ..lastPlayed = hand.timePlayed;
@@ -322,7 +318,7 @@ class _NewHandScreenState extends State<NewHandScreen> {
               teamBuilder.wins += 1;
             }
             Match updatedMatch = matchBuilder.build();
-            matchReference.setData(updatedMatch.toMap(), merge: true);
+            widget.matchReference.setData(updatedMatch.toMap(), merge: true);
 
             Navigator.pop(context);
           }
