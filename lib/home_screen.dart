@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'common_widgets.dart';
+import 'join_match_dialog.dart';
 import 'login_screen.dart';
 import 'match_screen.dart';
 import 'model/match.dart';
@@ -51,6 +52,13 @@ class HomeWidget extends StatelessWidget {
           PopupMenuButton<Function>(
             onSelected: (function) => function.call(),
             itemBuilder: (BuildContext context) => <PopupMenuItem<Function>>[
+                  PopupMenuItem<Function>(
+                    value: () => showDialog(
+                          context: context,
+                          builder: (context) => JoinMatchDialog(user),
+                        ),
+                    child: Text('Join match'),
+                  ),
                   PopupMenuItem<Function>(
                     value: () =>
                         Navigator.pushNamed(context, SettingsScreen.routeName),

@@ -127,7 +127,12 @@ class MatchScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _buildHeader(context, match),
+        Padding(
+            padding: EdgeInsets.only(
+                top: 12.0, bottom: 24.0, left: 16.0, right: 16.0),
+            child: DefaultTextStyle(
+                style: Theme.of(context).textTheme.title,
+                child: buildHeader(context, match))),
         Divider(height: 0.0),
         Flexible(
           child: StreamBuilder<QuerySnapshot>(
@@ -146,62 +151,52 @@ class MatchScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, Match match) {
-    TextStyle mainStyle = Theme.of(context).textTheme.title;
+  static Widget buildHeader(BuildContext context, Match match) {
     int nameFlex = 5;
     int winsFlex = 1;
-    return Padding(
-      padding:
-          EdgeInsets.only(top: 12.0, bottom: 24.0, left: 16.0, right: 16.0),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            flex: nameFlex,
+    return Row(
+      children: <Widget>[
+        Expanded(
+          flex: nameFlex,
+          child: Text(
+            match.teamA.name,
+            textAlign: TextAlign.left,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Expanded(
+          flex: winsFlex,
+          child: Text(
+            "${match.teamA.wins}",
+            textAlign: TextAlign.right,
+          ),
+        ),
+        Expanded(
+          flex: 0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: Text(
-              match.teamA.name,
-              textAlign: TextAlign.left,
-              overflow: TextOverflow.ellipsis,
-              style: mainStyle,
+              ":",
+              textAlign: TextAlign.center,
             ),
           ),
-          Expanded(
-            flex: winsFlex,
-            child: Text(
-              "${match.teamA.wins}",
-              textAlign: TextAlign.right,
-              style: mainStyle,
-            ),
+        ),
+        Expanded(
+          flex: winsFlex,
+          child: Text(
+            "${match.teamB.wins}",
+            textAlign: TextAlign.left,
           ),
-          Expanded(
-            flex: 0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Text(
-                ":",
-                textAlign: TextAlign.center,
-                style: mainStyle,
-              ),
-            ),
+        ),
+        Expanded(
+          flex: nameFlex,
+          child: Text(
+            match.teamB.name,
+            textAlign: TextAlign.right,
+            overflow: TextOverflow.ellipsis,
           ),
-          Expanded(
-            flex: winsFlex,
-            child: Text(
-              "${match.teamB.wins}",
-              textAlign: TextAlign.left,
-              style: mainStyle,
-            ),
-          ),
-          Expanded(
-            flex: nameFlex,
-            child: Text(
-              match.teamB.name,
-              textAlign: TextAlign.right,
-              overflow: TextOverflow.ellipsis,
-              style: mainStyle,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
