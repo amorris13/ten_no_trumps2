@@ -25,7 +25,7 @@ class _JoinMatchDialogState extends State<JoinMatchDialog> {
   @override
   void initState() {
     super.initState();
-    matchCodeSubject = BehaviorSubject(seedValue: "");
+    matchCodeSubject = BehaviorSubject.seeded(null);
     matchDocumentSnapshotStream = Observable(matchCodeSubject.stream)
         .distinct()
         .doOnData((data) => print("matchCodeStream: $data"))
