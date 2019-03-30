@@ -79,6 +79,44 @@ class MatchScreen extends StatelessWidget {
               );
             },
           ),
+          IconButton(
+            icon: Icon(Icons.person_add),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  // return object of type Dialog
+                  return AlertDialog(
+                    title: Text("Invite Others"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text("Use the following code"),
+                        Padding(
+                          padding: EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            match.code,
+                            style: Theme.of(context)
+                                .textTheme
+                                .display1
+                                .copyWith(fontFamily: "monospace"),
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text("Close"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
         ],
       ),
       body: _buildBody(context, match),
@@ -116,7 +154,6 @@ class MatchScreen extends StatelessWidget {
       padding:
           EdgeInsets.only(top: 12.0, bottom: 24.0, left: 16.0, right: 16.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Expanded(
             flex: nameFlex,

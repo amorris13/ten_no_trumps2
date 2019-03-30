@@ -16,8 +16,12 @@ abstract class Match implements Built<Match, MatchBuilder> {
   Team get teamA;
   // Team number 1
   Team get teamB;
+
   DateTime get lastPlayed;
   BuiltList<String> get users;
+
+  @nullable
+  String get code;
 
   Match._();
 
