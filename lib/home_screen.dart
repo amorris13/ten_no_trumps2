@@ -89,17 +89,21 @@ class HomeWidget extends StatelessWidget {
   }
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-    return Scrollbar(
-      child: ListView.separated(
-        separatorBuilder: (context, index) => Divider(
-              color: Theme.of(context).dividerColor,
-              height: 0.0,
+    return snapshot.isEmpty
+        ? Padding(
+            padding: EdgeInsets.only(top: 16.0),
+            child: Center(child: Text("Click + to start a match.")))
+        : Scrollbar(
+            child: ListView.separated(
+              separatorBuilder: (context, index) => Divider(
+                    color: Theme.of(context).dividerColor,
+                    height: 0.0,
+                  ),
+              itemCount: snapshot.length,
+              itemBuilder: (context, index) =>
+                  _buildListItem(context, snapshot[index]),
             ),
-        itemCount: snapshot.length,
-        itemBuilder: (context, index) =>
-            _buildListItem(context, snapshot[index]),
-      ),
-    );
+          );
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot snapshot) {
