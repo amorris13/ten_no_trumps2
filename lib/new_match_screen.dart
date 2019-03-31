@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'match_screen.dart';
 import 'model/match.dart';
+import 'model/round.dart';
+import 'round_screen.dart';
 
 class NewMatchScreenArguments {
   final FirebaseUser currentUser;
@@ -106,10 +107,21 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                     DocumentReference userReference = Firestore.instance
                         .collection('users')
                         .document(this.widget.currentUser.uid);
+
+                    Round round = new Round((b) => b
+                      ..teamAScore = 0
+                      ..teamBScore = 0
+                      ..numHands = 0
+                      ..finished = false
+                      ..lastPlayed = DateTime.now());
+
+                    DocumentReference roundReference =
+                        matchReference.collection("rounds").document();
+                    roundReference.setData(round.toMap());
                     Navigator.pushReplacementNamed(
-                        context, MatchScreen.routeName,
-                        arguments: MatchScreenArguments(
-                            matchReference, userReference));
+                        context, RoundScreen.routeName,
+                        arguments: RoundScreenArguments(
+                            userReference, matchReference, roundReference));
                   }
                 },
                 child: Text('Create Match'),
