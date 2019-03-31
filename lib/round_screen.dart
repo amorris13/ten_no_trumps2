@@ -104,13 +104,6 @@ class RoundWidget extends StatelessWidget {
               userReference.setData(updatedUser.toMap(), merge: true);
             }),
       ));
-
-      actions.add(IconButton(
-        icon: Icon(Icons.add),
-        onPressed: () => Navigator.pushNamed(context, NewHandScreen.routeName,
-            arguments: NewHandScreenArguments(
-                this.matchReference, this.roundReference)),
-      ));
     }
 
     return Scaffold(
@@ -179,10 +172,28 @@ class RoundWidget extends StatelessWidget {
             child: Center(child: Text("Click + to create a hand")))
         : ListView.separated(
             separatorBuilder: (context, index) => Divider(height: 0.0),
-            itemCount: snapshot.length,
-            itemBuilder: (context, index) =>
-                _buildListItem(context, snapshot[index]),
-          );
+            controller: ScrollController(initialScrollOffset: 1000.0),
+            itemCount: snapshot.length + (round.finished ? 0 : 1),
+            itemBuilder: (context, index) {
+              if (index < snapshot.length) {
+                return _buildListItem(context, snapshot[index]);
+              } else if (index == snapshot.length) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 4.0),
+                  child: Center(
+                    child: OutlineButton(
+                      onPressed: () => Navigator.pushNamed(
+                          context, NewHandScreen.routeName,
+                          arguments: NewHandScreenArguments(
+                              this.matchReference, this.roundReference)),
+                      child: Text("New Hand"),
+                    ),
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            });
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot handSnapshot) {
