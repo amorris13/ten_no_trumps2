@@ -90,9 +90,7 @@ class HomeWidget extends StatelessWidget {
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return snapshot.isEmpty
-        ? Padding(
-            padding: EdgeInsets.only(top: 16.0),
-            child: Center(child: Text("Click + to start a match.")))
+        ? Center(child: Text("Click + to start a match."))
         : Scrollbar(
             child: ListView.separated(
               separatorBuilder: (context, index) => Divider(height: 0.0),
