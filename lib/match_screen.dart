@@ -57,28 +57,6 @@ class MatchScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Match"),
         actions: <Widget>[
-          // action button
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              Round round = new Round((b) => b
-                ..teamAScore = 0
-                ..teamBScore = 0
-                ..numHands = 0
-                ..finished = false
-                ..lastPlayed = DateTime.now());
-
-              DocumentReference roundReference =
-                  matchReference.collection("rounds").document();
-              roundReference.setData(round.toMap());
-              Navigator.pushNamed(
-                context,
-                RoundScreen.routeName,
-                arguments: RoundScreenArguments(
-                    userReference, matchReference, roundReference),
-              );
-            },
-          ),
           IconButton(
             icon: Icon(Icons.person_add),
             onPressed: () {
@@ -123,16 +101,44 @@ class MatchScreen extends StatelessWidget {
     );
   }
 
+  void createRoundAndOpen(BuildContext context) {
+    Round round = new Round((b) => b
+      ..teamAScore = 0
+      ..teamBScore = 0
+      ..numHands = 0
+      ..finished = false
+      ..lastPlayed = DateTime.now());
+
+    DocumentReference roundReference =
+        matchReference.collection("rounds").document();
+    roundReference.setData(round.toMap());
+    Navigator.pushNamed(
+      context,
+      RoundScreen.routeName,
+      arguments:
+          RoundScreenArguments(userReference, matchReference, roundReference),
+    );
+  }
+
   Widget _buildBody(BuildContext context, Match match) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Padding(
-            padding: EdgeInsets.only(
-                top: 12.0, bottom: 24.0, left: 16.0, right: 16.0),
-            child: DefaultTextStyle(
-                style: Theme.of(context).textTheme.title,
-                child: buildHeader(context, match))),
+          padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          child: DefaultTextStyle(
+              style: Theme.of(context).textTheme.title,
+              child: buildHeader(context, match)),
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 12.0),
+          child: Center(
+            child: OutlineButton(
+              onPressed: () => createRoundAndOpen(context),
+              child: Text("New Round"),
+            ),
+          ),
+        ),
         Divider(height: 0.0),
         Flexible(
           child: StreamBuilder<QuerySnapshot>(
