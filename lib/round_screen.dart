@@ -173,23 +173,36 @@ class RoundWidget extends StatelessWidget {
         : Scrollbar(
             child: ListView.separated(
                 separatorBuilder: (context, index) => Divider(height: 0.0),
-                itemCount: snapshot.length + (round.finished ? 0 : 1),
+                itemCount: snapshot.length + 1,
                 itemBuilder: (context, index) {
                   if (index < snapshot.length) {
                     return _buildListItem(context, snapshot[index]);
                   } else if (index == snapshot.length) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4.0),
-                      child: Center(
-                        child: OutlineButton(
-                          onPressed: () => Navigator.pushNamed(
-                              context, NewHandScreen.routeName,
-                              arguments: NewHandScreenArguments(
-                                  this.matchReference, this.roundReference)),
-                          child: Text("New Hand"),
+                    if (round.finished) {
+                      String winningTeamName =
+                          match.getTeam(round.winningTeam).name;
+                      return Center(
+                          child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text(
+                          "$winningTeamName has won!",
+                          style: Theme.of(context).textTheme.title,
                         ),
-                      ),
-                    );
+                      ));
+                    } else {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 4.0),
+                        child: Center(
+                          child: OutlineButton(
+                            onPressed: () => Navigator.pushNamed(
+                                context, NewHandScreen.routeName,
+                                arguments: NewHandScreenArguments(
+                                    this.matchReference, this.roundReference)),
+                            child: Text("New Hand"),
+                          ),
+                        ),
+                      );
+                    }
                   } else {
                     return Container();
                   }
@@ -275,25 +288,9 @@ class RoundWidget extends StatelessWidget {
           child: handDetails);
     }
 
-    var rows = <Widget>[handDetails];
-
-    if (round.finished && isLast) {
-      String winningTeam = match.getTeam(round.winningTeam).name;
-      rows.add(Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        child: Text(
-          "$winningTeam has won!",
-          style: Theme.of(context).textTheme.title,
-        ),
-      ));
-    }
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: rows,
-      ),
+      child: handDetails,
     );
   }
 
