@@ -219,28 +219,31 @@ class RoundWidget extends StatelessWidget {
     TextStyle mainStyle = Theme.of(context).textTheme.subhead;
     int winsFlex = 1;
 
-    Widget handDetails = Row(
-      children: <Widget>[
-        Expanded(
-          flex: winsFlex,
-          child: _buildTeamDetails(context, hand, 0, isLast, false),
-        ),
-        Expanded(
-          flex: 0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: Text(
-              ":",
-              textAlign: TextAlign.center,
-              style: mainStyle,
+    Widget handDetails = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            flex: winsFlex,
+            child: _buildTeamDetails(context, hand, 0, isLast, false),
+          ),
+          Expanded(
+            flex: 0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Text(
+                ":",
+                textAlign: TextAlign.center,
+                style: mainStyle,
+              ),
             ),
           ),
-        ),
-        Expanded(
-          flex: winsFlex,
-          child: _buildTeamDetails(context, hand, 1, isLast, true),
-        ),
-      ],
+          Expanded(
+            flex: winsFlex,
+            child: _buildTeamDetails(context, hand, 1, isLast, true),
+          ),
+        ],
+      ),
     );
 
     if (isLast && !round.finished) {
@@ -288,10 +291,7 @@ class RoundWidget extends StatelessWidget {
           child: handDetails);
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: handDetails,
-    );
+    return handDetails;
   }
 
   Widget _buildTeamDetails(BuildContext context, Hand hand, int teamNumber,
