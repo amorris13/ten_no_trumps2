@@ -166,48 +166,45 @@ class RoundWidget extends StatelessWidget {
   }
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-    return snapshot.isEmpty
-        ? Padding(
-            padding: EdgeInsets.only(top: 16.0),
-            child: Center(child: Text("Click + to create a hand")))
-        : Scrollbar(
-            child: ListView.separated(
-                separatorBuilder: (context, index) => Divider(height: 0.0),
-                itemCount: snapshot.length + 1,
-                itemBuilder: (context, index) {
-                  if (index < snapshot.length) {
-                    return _buildListItem(context, snapshot[index]);
-                  } else if (index == snapshot.length) {
-                    if (round.finished) {
-                      String winningTeamName =
-                          match.getTeam(round.winningTeam).name;
-                      return Center(
-                          child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          "$winningTeamName has won!",
-                          style: Theme.of(context).textTheme.title,
-                        ),
-                      ));
-                    } else {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4.0),
-                        child: Center(
-                          child: OutlineButton(
-                            onPressed: () => Navigator.pushNamed(
-                                context, NewHandScreen.routeName,
-                                arguments: NewHandScreenArguments(
-                                    this.matchReference, this.roundReference)),
-                            child: Text("New Hand"),
-                          ),
-                        ),
-                      );
-                    }
-                  } else {
-                    return Container();
-                  }
-                }),
-          );
+    return Scrollbar(
+      child: ListView.separated(
+        separatorBuilder: (context, index) => Divider(height: 0.0),
+        itemCount: snapshot.length + 1,
+        itemBuilder: (context, index) {
+          if (index < snapshot.length) {
+            return _buildListItem(context, snapshot[index]);
+          } else if (index == snapshot.length) {
+            if (round.finished) {
+              String winningTeamName = match.getTeam(round.winningTeam).name;
+              return Center(
+                  child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  "$winningTeamName has won!",
+                  style: Theme.of(context).textTheme.title,
+                ),
+              ));
+            } else {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.0),
+                child: Center(
+                  child: OutlineButton(
+                    onPressed: () => Navigator.pushNamed(
+                        context, NewHandScreen.routeName,
+                        arguments: NewHandScreenArguments(
+                            this.matchReference, this.roundReference)),
+                    child: Text("New Hand"),
+                  ),
+                ),
+              );
+            }
+          } else {
+            // Should never happen
+            return Container();
+          }
+        },
+      ),
+    );
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot handSnapshot) {
