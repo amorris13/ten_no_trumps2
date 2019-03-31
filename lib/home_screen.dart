@@ -95,10 +95,7 @@ class HomeWidget extends StatelessWidget {
             child: Center(child: Text("Click + to start a match.")))
         : Scrollbar(
             child: ListView.separated(
-              separatorBuilder: (context, index) => Divider(
-                    color: Theme.of(context).dividerColor,
-                    height: 0.0,
-                  ),
+              separatorBuilder: (context, index) => Divider(height: 0.0),
               itemCount: snapshot.length,
               itemBuilder: (context, index) =>
                   _buildListItem(context, snapshot[index]),
