@@ -40,6 +40,7 @@ class HomeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Image.asset('assets/ic-launcher.png'),
         title: Text('500 Scorer'),
         actions: <Widget>[
           // action button
