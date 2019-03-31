@@ -31,6 +31,14 @@
           }
         },
         {
+          "client_id": "80405825147-bcuqk3ir2fgkur33edp9p2ouaj4e23nc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antsapps.tennotrumps2",
+            "certificate_hash": "74a42bcd700f94cf4c9444110bda7d10af2c2558"
+          }
+        },
+        {
           "client_id": "80405825147-1nufiok2n6gstvuuf1tm6gah7eadov84.apps.googleusercontent.com",
           "client_type": 3
         }
