@@ -89,13 +89,16 @@ class HomeWidget extends StatelessWidget {
   }
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-    return ListView.separated(
-      separatorBuilder: (context, index) => Divider(
-            color: Theme.of(context).dividerColor,
-            height: 0.0,
-          ),
-      itemCount: snapshot.length,
-      itemBuilder: (context, index) => _buildListItem(context, snapshot[index]),
+    return Scrollbar(
+      child: ListView.separated(
+        separatorBuilder: (context, index) => Divider(
+              color: Theme.of(context).dividerColor,
+              height: 0.0,
+            ),
+        itemCount: snapshot.length,
+        itemBuilder: (context, index) =>
+            _buildListItem(context, snapshot[index]),
+      ),
     );
   }
 

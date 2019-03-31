@@ -208,7 +208,8 @@ class MatchScreen extends StatelessWidget {
 
   Widget _buildList(
       BuildContext context, Match match, List<DocumentSnapshot> snapshot) {
-    return ListView.separated(
+    return Scrollbar(
+        child: ListView.separated(
       separatorBuilder: (context, index) => Divider(
             color: Theme.of(context).dividerColor,
             height: 0.0,
@@ -216,7 +217,7 @@ class MatchScreen extends StatelessWidget {
       itemCount: snapshot.length,
       itemBuilder: (context, index) =>
           _buildListItem(context, match, snapshot[index]),
-    );
+    ));
   }
 
   Widget _buildListItem(
